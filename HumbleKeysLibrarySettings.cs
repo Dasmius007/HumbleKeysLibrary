@@ -16,7 +16,10 @@ namespace HumbleKeys
 
         public bool ConnectAccount { get; set; } = false;
 
-        public List<string> keyTypeWhitelist = new List<string>() { "steam", };
+        public List<string> keyTypeWhitelist = new List<string>() {
+            "steam",
+            "nintendo_direct",
+        };
 
         [JsonIgnore]
         public bool IsUserLoggedIn
