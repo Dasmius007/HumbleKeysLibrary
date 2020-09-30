@@ -15,8 +15,10 @@ namespace HumbleKeys
         private static readonly ILogger logger = LogManager.GetLogger();
         private const string dbImportMessageId = "humblekeyslibImportError";
         private const string humblePurchaseUrlMask = @"https://www.humblebundle.com/downloads?key={0}";
-        private const string REDEEMED_STRING = "Redeemed";
-        private const string UNREDEEMED_STRING = "Unredeemed";
+        private const string REDEEMED_STR = "Redeemed";
+        private const string UNREDEEMED_STR = "Unredeemed";
+        private const string HUMBLE_KEYS_SRC_NAME = "Humble Keys";
+        private const string HUMBLE_KEYS_PLATFORM_NAME = "Humble Key: ";
         #endregion
 
         #region === Accessors ================
@@ -136,7 +138,7 @@ namespace HumbleKeys
                 }
             }
 
-            logger.Info("Imported " + importedGames.Count + " Humble TPKDs.");
+            logger.Info($"Imported {importedGames.Count} Humble TPKDs.");
         }
 
         private Game ImportNewGame(Models.Order.TpkdDict.Tpk tpkd)
@@ -145,14 +147,13 @@ namespace HumbleKeys
             {
                 Name = tpkd.human_name,
                 GameId = GetGameId(tpkd),
-                Platform = "Humble Key: " + tpkd.key_type_human_name,
-                Source = "Humble Keys",
+                Platform = HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type_human_name,
+                Source = HUMBLE_KEYS_SRC_NAME,
                 Tags = new List<string>(),
                 Links = new List<Link>(),
             };
 
-            gameInfo.Tags.Add("Humble Key: " + tpkd.key_type_human_name);
-            gameInfo.Tags.Add(string.IsNullOrEmpty(tpkd.redeemed_key_val) ? "Unredeemed" : "Redeemed");
+            gameInfo.Tags.Add(string.IsNullOrEmpty(tpkd.redeemed_key_val) ? UNREDEEMED_STR : REDEEMED_STR);
 
             if (!string.IsNullOrWhiteSpace(tpkd.gamekey))
             {
@@ -170,19 +171,19 @@ namespace HumbleKeys
             
             // if tpkd is redeemed but game isn't, add redeemed, remove unredeemed
             if (!string.IsNullOrWhiteSpace(tpkd.redeemed_key_val)
-                && !existingGame.Tags.Any(t => t.Name == REDEEMED_STRING))
+                && !existingGame.Tags.Any(t => t.Name == REDEEMED_STR))
             {
-                existingGame.Tags.RemoveAll(t => t.Name == UNREDEEMED_STRING);
-                existingGame.Tags.Add(new Tag(REDEEMED_STRING));
+                existingGame.Tags.RemoveAll(t => t.Name == UNREDEEMED_STR);
+                existingGame.Tags.Add(new Tag(REDEEMED_STR));
             }
 
             // if tpkd is unredeemed but game isn't, add unredeemed, remove redeemed
             // this should be impossible
             if (string.IsNullOrWhiteSpace(tpkd.redeemed_key_val)
-                && !existingGame.Tags.Any(t => t.Name == UNREDEEMED_STRING))
+                && !existingGame.Tags.Any(t => t.Name == UNREDEEMED_STR))
             {
-                existingGame.Tags.RemoveAll(t => t.Name == REDEEMED_STRING);
-                existingGame.Tags.Add(new Tag(UNREDEEMED_STRING));
+                existingGame.Tags.RemoveAll(t => t.Name == REDEEMED_STR);
+                existingGame.Tags.Add(new Tag(UNREDEEMED_STR));
             }
 
             PlayniteApi.Database.Games.Update(existingGame);
