@@ -5,3 +5,7 @@ The default Humble Library plug-in only reports DRM-free games, not the keys for
 
 ## Installation
 Download the latest .pext file and drag-and-drop it onto your Playnite window.
+
+## Attributions
+Key icon by Freepik
+https://www.flaticon.com/authors/freepik
