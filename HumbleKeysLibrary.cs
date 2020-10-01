@@ -147,7 +147,7 @@ namespace HumbleKeys
             {
                 Name = tpkd.human_name,
                 GameId = GetGameId(tpkd),
-                Platform = HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type_human_name,
+                Platform = HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type,
                 Source = HUMBLE_KEYS_SRC_NAME,
                 Tags = new List<string>(),
                 Links = new List<Link>(),

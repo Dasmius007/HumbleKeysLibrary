@@ -17,8 +17,11 @@ namespace HumbleKeys
         public bool ConnectAccount { get; set; } = false;
 
         public List<string> keyTypeWhitelist = new List<string>() {
-            "steam",
+            "gog",
             "nintendo_direct",
+            "origin",
+            "origin_keyless",
+            "steam",
         };
 
         [JsonIgnore]
