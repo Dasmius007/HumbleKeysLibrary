@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Playnite.SDK;
+using HumbleKeys.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

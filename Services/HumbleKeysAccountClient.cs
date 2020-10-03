@@ -1,14 +1,11 @@
 ﻿using HumbleKeys.Models;
-using Playnite.Common;
 using Playnite.SDK;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace HumbleKeys.Services
 {
@@ -20,7 +17,6 @@ namespace HumbleKeys.Services
         private const string libraryUrl = @"https://www.humblebundle.com/home/library?hmb_source=navbar";
         private const string logoutUrl = @"https://www.humblebundle.com/logout?goto=/";
         private const string orderUrlMask = @"https://www.humblebundle.com/api/v1/order/{0}?all_tpkds=true";
-
 
         public HumbleKeysAccountClient(IWebView webView) { this.webView = webView; }
 
@@ -57,7 +53,7 @@ namespace HumbleKeys.Services
             if (match.Success)
             {
                 var strKeys = match.Groups[1].Value;
-                return Serialization.FromJson<List<string>>(strKeys);
+                return FromJson<List<string>>(strKeys);
             }
             else
             {
@@ -73,7 +69,7 @@ namespace HumbleKeys.Services
             {
                 webView.NavigateAndWait(string.Format(orderUrlMask, key));
                 var strContent = webView.GetPageText();
-                orders.Add(Serialization.FromJson<Order>(strContent));
+                orders.Add(FromJson<Order>(strContent));
             }
 
             return orders;
@@ -85,10 +81,33 @@ namespace HumbleKeys.Services
             var orders = new List<Order>();
             foreach (var cacheFile in Directory.GetFiles(cachePath))
             {
-                orders.Add(Serialization.FromJsonFile<Order>(cacheFile));
+                orders.Add(FromJsonFile<Order>(cacheFile));
             }
 
             return orders;
         }
+
+
+        #region === Helper Methods ================
+        public static T FromJson<T>(string json) where T : class
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, $"Failed to deserialize {typeof(T).FullName} from json:");
+                logger.Debug(json);
+                throw;
+            }
+        }
+
+
+        public static T FromJsonFile<T>(string filePath) where T : class
+        {
+            return FromJson<T>(File.ReadAllText(filePath));
+        }
+        #endregion
     }
 }
