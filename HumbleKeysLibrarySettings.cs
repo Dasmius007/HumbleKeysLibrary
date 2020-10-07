@@ -16,6 +16,7 @@ namespace HumbleKeys
         private HumbleKeysLibrarySettings editingClone;
 
         public bool ConnectAccount { get; set; } = false;
+        public bool IgnoreRedeemedKeys { get; set; } = false;
 
         public List<string> keyTypeWhitelist = new List<string>() {
             "gog",

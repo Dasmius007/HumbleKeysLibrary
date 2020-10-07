@@ -15,8 +15,9 @@ namespace HumbleKeys
         private static readonly ILogger logger = LogManager.GetLogger();
         private const string dbImportMessageId = "humblekeyslibImportError";
         private const string humblePurchaseUrlMask = @"https://www.humblebundle.com/downloads?key={0}";
-        private const string REDEEMED_STR = "Redeemed";
-        private const string UNREDEEMED_STR = "Unredeemed";
+        private const string REDEEMED_STR = "Key: Redeemed";
+        private const string UNREDEEMED_STR = "Key: Unredeemed";
+        private static readonly string[] PAST_TAGS = { REDEEMED_STR, UNREDEEMED_STR, "Redeemed", "Unredeemed", };
         private const string HUMBLE_KEYS_SRC_NAME = "Humble Keys";
         private const string HUMBLE_KEYS_PLATFORM_NAME = "Humble Key: ";
         #endregion
@@ -113,6 +114,7 @@ namespace HumbleKeys
                 .Where(t => t != null
                     && Settings.keyTypeWhitelist.Contains(t.key_type)
                     && !string.IsNullOrWhiteSpace(t.gamekey)
+                    && !(Settings.IgnoreRedeemedKeys && IsKeyPresent(t) )
                 )
                 .ToList();
         }
@@ -168,23 +170,10 @@ namespace HumbleKeys
         {
             if (existingGame == null) { return; }
             if (!Settings.keyTypeWhitelist.Contains(tpkd.key_type)) { return; }
-            
-            // if tpkd is redeemed but game isn't, add redeemed, remove unredeemed
-            if (!string.IsNullOrWhiteSpace(tpkd.redeemed_key_val)
-                && !existingGame.Tags.Any(t => t.Name == REDEEMED_STR))
-            {
-                existingGame.Tags.RemoveAll(t => t.Name == UNREDEEMED_STR);
-                existingGame.Tags.Add(new Tag(REDEEMED_STR));
-            }
 
-            // if tpkd is unredeemed but game isn't, add unredeemed, remove redeemed
-            // this should be impossible
-            if (string.IsNullOrWhiteSpace(tpkd.redeemed_key_val)
-                && !existingGame.Tags.Any(t => t.Name == UNREDEEMED_STR))
-            {
-                existingGame.Tags.RemoveAll(t => t.Name == REDEEMED_STR);
-                existingGame.Tags.Add(new Tag(UNREDEEMED_STR));
-            }
+            existingGame.Tags.RemoveAll(t => PAST_TAGS.Contains(t.Name));
+
+            existingGame.Tags.Add(new Tag( IsKeyPresent(tpkd) ? REDEEMED_STR : UNREDEEMED_STR ));
 
             PlayniteApi.Database.Games.Update(existingGame);
         }
@@ -193,6 +182,7 @@ namespace HumbleKeys
         #region === Helper Methods ============
         private static string GetGameId(Order.TpkdDict.Tpk tpk) => $"{tpk.machine_name}_{tpk.gamekey}";
         private static Link MakeLink(string gamekey) => new Link("Humble Purchase URL", string.Format(humblePurchaseUrlMask, gamekey) );
+        private static bool IsKeyPresent(Order.TpkdDict.Tpk t) => !string.IsNullOrWhiteSpace(t.redeemed_key_val);
         #endregion
     }
 }

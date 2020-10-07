@@ -19,6 +19,11 @@
     </UserControl.Resources>
 
     <StackPanel Margin="20">
+        <CheckBox Margin="0,10,0,0"
+                      IsChecked="{Binding IgnoreRedeemedKeys}"
+                      Content="Ignore Redeemed Keys"
+                      ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed."/>
+        
         <CheckBox x:Name="CheckHumbleConnectAccount"
                   IsChecked="{Binding ConnectAccount}"
                   Content="{DynamicResource LOCSettingsConnectAccount}"/>
