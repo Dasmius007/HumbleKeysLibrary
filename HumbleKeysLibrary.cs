@@ -1,4 +1,5 @@
 ﻿using Playnite.SDK;
+using Playnite.SDK.Data;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
@@ -9,6 +10,7 @@ using HumbleKeys.Models;
 
 namespace HumbleKeys
 {
+    [LoadPlugin]
     public class HumbleKeysLibrary : LibraryPlugin
     {
         #region === Constants ================
@@ -25,11 +27,11 @@ namespace HumbleKeys
         #region === Accessors ================
         private HumbleKeysLibrarySettings Settings { get; set; }
 
-        public override LibraryPluginCapabilities Capabilities { get; } = new LibraryPluginCapabilities
-        {
-            CanShutdownClient = false,
-            HasCustomizedGameImport = true
-        };
+        //public override LibraryPluginCapabilities Capabilities { get; } = new LibraryPluginCapabilities
+        //{
+        //    CanShutdownClient = false,
+        //    HasCustomizedGameImport = true
+        //};
 
         public override Guid Id { get; } = Guid.Parse("62ac4052-e08a-4a1a-b70a-c2c0c3673bb9");
         public override string Name => "Humble Keys Library";
@@ -41,6 +43,7 @@ namespace HumbleKeys
 
         public HumbleKeysLibrary(IPlayniteAPI api) : base(api)
         {
+            Properties = new LibraryPluginProperties { CanShutdownClient = false, HasCustomizedGameImport = true };
             Settings = new HumbleKeysLibrarySettings(this);
         }
 
@@ -55,12 +58,15 @@ namespace HumbleKeys
         {
             return new HumbleKeysLibrarySettingsView();
         }
-        
 
-        public override IEnumerable<Game> ImportGames()
+
+        //public override IEnumerable<Game> ImportGames()
+        public override IEnumerable<Game> ImportGames(LibraryImportGamesArgs args)
+
         {
             var importedGames = new List<Game>();
             Exception importError = null;
+
             if (!Settings.ConnectAccount) { return importedGames; }
 
             try
@@ -72,10 +78,12 @@ namespace HumbleKeys
             catch (Exception e)
             {
                 importError = e;
+                logger.Error($"HKL: error {e}");
             }
 
             if (importError != null)
             {
+                logger.Error($"HKL: importError {dbImportMessageId}");
                 PlayniteApi.Notifications.Add(new NotificationMessage(
                     dbImportMessageId,
                     string.Format(PlayniteApi.Resources.GetString("LOCLibraryImportError"), Name) +
@@ -139,23 +147,38 @@ namespace HumbleKeys
                     UpdateExistingGame(alreadyImported, tpkd);
                 }
             }
-
-            logger.Info($"Imported {importedGames.Count} Humble TPKDs.");
         }
 
         private Game ImportNewGame(Models.Order.TpkdDict.Tpk tpkd)
         {
-            GameInfo gameInfo = new GameInfo()
+
+            //GameInfo gameInfo = new GameInfo()
+            //{
+            //    Name = tpkd.human_name,
+            //    GameId = GetGameId(tpkd),
+            //    Platform = HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type,
+            //    Source = HUMBLE_KEYS_SRC_NAME,
+            //    Tags = new List<string>(),
+            //    Links = new List<Link>(),
+            //};
+
+
+            GameMetadata gameInfo = new GameMetadata()
             {
                 Name = tpkd.human_name,
                 GameId = GetGameId(tpkd),
-                Platform = HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type,
-                Source = HUMBLE_KEYS_SRC_NAME,
-                Tags = new List<string>(),
+                Platforms = new HashSet<MetadataProperty> { new MetadataNameProperty(
+                        HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type ) },
+                Source = new MetadataNameProperty(HUMBLE_KEYS_SRC_NAME),
+                Tags = new HashSet<MetadataProperty> (),
                 Links = new List<Link>(),
             };
 
-            gameInfo.Tags.Add(string.IsNullOrEmpty(tpkd.redeemed_key_val) ? UNREDEEMED_STR : REDEEMED_STR);
+
+            //gameInfo.Tags.Add(string.IsNullOrEmpty(tpkd.redeemed_key_val) ? UNREDEEMED_STR : REDEEMED_STR);
+            gameInfo.Tags.Add( new MetadataNameProperty(
+                string.IsNullOrEmpty(tpkd.redeemed_key_val) ? UNREDEEMED_STR : REDEEMED_STR
+            ));
 
             if (!string.IsNullOrWhiteSpace(tpkd.gamekey))
             {
