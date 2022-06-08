@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 namespace HumbleKeys.Services
@@ -70,6 +71,11 @@ namespace HumbleKeys.Services
             {
                 webView.NavigateAndWait(string.Format(orderUrlMask, key));
                 var strContent = webView.GetPageText();
+
+                #region === DEBUG ==================
+                DEBUG_LogFirstObjectRedeemed(key, strContent);
+                #endregion === DEBUG ==================
+
                 orders.Add(FromJson<Order>(strContent));
             }
 
@@ -96,19 +102,37 @@ namespace HumbleKeys.Services
             {
                 return JsonConvert.DeserializeObject<T>(json);
             }
-            catch (Exception e)
+            catch
             {
-                logger.Error(e, $"Failed to deserialize {typeof(T).FullName} from json:");
-                logger.Debug(json);
                 throw;
             }
         }
-
 
         public static T FromJsonFile<T>(string filePath) where T : class
         {
             return FromJson<T>(File.ReadAllText(filePath));
         }
         #endregion
+
+
+        #region === DEBUG ========================
+        public static void DEBUG_LogFirstObjectRedeemed(string orderKey, string strContent)
+        {
+            var jsonObject = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(strContent);
+
+            if (jsonObject["tpkd_dict"] == null) { logger.Debug("null tpkd_dict"); return; }
+            if (jsonObject["tpkd_dict"]["all_tpks"] == null) { logger.Debug("null all_tpks"); return; }
+
+            var allTpks = jsonObject["tpkd_dict"]["all_tpks"];
+
+            allTpks.ForEach(
+               t => {
+                    if (t == null) { return; }
+                    if (t["redeemed_key_val"] == null) { return; }
+                    if (t["redeemed_key_val"].Type == Newtonsoft.Json.Linq.JTokenType.String) { return; }
+                   // TODO: add tags to game; maybe collate into list?
+               });
+        }
+        #endregion === DEBUG ========================
     }
 }

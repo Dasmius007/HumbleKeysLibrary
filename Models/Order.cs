@@ -59,7 +59,8 @@ namespace HumbleKeys.Models
                 public string human_name;
                 public string @class;
                 public string library_family_name;
-                public string redeemed_key_val;
+                //public string redeemed_key_val;
+                public Newtonsoft.Json.Linq.JToken redeemed_key_val;
             }
 
             public List<Tpk> all_tpks;

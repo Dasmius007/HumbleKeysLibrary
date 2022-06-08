@@ -117,6 +117,18 @@ namespace HumbleKeys
 
         public List<Order.TpkdDict.Tpk> SelectTpkds(List<Order> orders)
         {
+            //foreach(var o in orders)
+            //{
+            //    if (o == null) { continue; }
+
+            //    foreach(var t in o.tpkd_dict.all_tpks)
+            //    {
+            //        if (t == null) { continue; }
+
+            //        logger.Debug($"GAMES; key = {o.gamekey}; product = {o.product.human_name}; tpk = {t.human_name}; key type = {t.key_type}; redeemed = {GetRedeemedTag(t)}");
+            //    }
+            //}
+
             return orders
                 .SelectMany(a => a.tpkd_dict?.all_tpks)
                 .Where(t => t != null
@@ -151,7 +163,6 @@ namespace HumbleKeys
 
         private Game ImportNewGame(Models.Order.TpkdDict.Tpk tpkd)
         {
-
             //GameInfo gameInfo = new GameInfo()
             //{
             //    Name = tpkd.human_name,
@@ -162,27 +173,79 @@ namespace HumbleKeys
             //    Links = new List<Link>(),
             //};
 
+            
 
+            //var tempName = tpkd.human_name;
+            //var tempGameId = GetGameId(tpkd);
+            //var tempKeyType = tpkd?.key_type;
+            //var tempPlatforms = new HashSet<MetadataProperty> { new MetadataNameProperty(
+            //            HUMBLE_KEYS_PLATFORM_NAME + tempKeyType) };
+            //var tempSource = new MetadataNameProperty(HUMBLE_KEYS_SRC_NAME);
+
+            //GameMetadata gameInfo;
+
+            //try
+            //{
             GameMetadata gameInfo = new GameMetadata()
             {
                 Name = tpkd.human_name,
                 GameId = GetGameId(tpkd),
-                Platforms = new HashSet<MetadataProperty> { new MetadataNameProperty(
-                        HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type ) },
                 Source = new MetadataNameProperty(HUMBLE_KEYS_SRC_NAME),
-                Tags = new HashSet<MetadataProperty> (),
+                Platforms = new HashSet<MetadataProperty> { new MetadataNameProperty(
+                        HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type) },
+                Tags = new HashSet<MetadataProperty>(),
                 Links = new List<Link>(),
             };
+            //}
+            //catch (Exception e)
+            //{
+            //    logger.Debug($"DEBUG === {tpkd.human_name} GameMetadata CATCH === " + e.ToString());
+            //    gameInfo = null;
+            //}
 
+            //gameInfo = new GameMetadata()
+            //{
+            //    Name = tempName,
+            //    GameId = tempGameId,
+            //    Icon = null,
+            //    Source = tempSource,
+            //};
+
+            //{
+            //    Name = tpkd?.human_name ?? "Null tpkd, no name imported",
+            //    GameId = GetGameId(tpkd),
+            //    Platforms = new HashSet<MetadataProperty> { new MetadataNameProperty(
+            //            HUMBLE_KEYS_PLATFORM_NAME + (string)tpkd?.key_type ) },
+            //    Source = new MetadataNameProperty(HUMBLE_KEYS_SRC_NAME),
+            //    Tags = new HashSet<MetadataProperty>(),
+            //    Links = new List<Link>(),
+            //};
+
+            //if (tpkd.redeemed_key_val.Type == Newtonsoft.Json.Linq.JTokenType.String)
+            //{
+            //    gameInfo.Tags.Add(new MetadataNameProperty(REDEEMED_STR));
+            //}
+            //else if (tpkd.redeemed_key_val.Type == Newtonsoft.Json.Linq.JTokenType.Object &&
+            //    tpkd.redeemed_key_val["key"].Type == Newtonsoft.Json.Linq.JTokenType.String)
+            //{
+
+            //}
 
             //gameInfo.Tags.Add(string.IsNullOrEmpty(tpkd.redeemed_key_val) ? UNREDEEMED_STR : REDEEMED_STR);
-            gameInfo.Tags.Add( new MetadataNameProperty(
-                string.IsNullOrEmpty(tpkd.redeemed_key_val) ? UNREDEEMED_STR : REDEEMED_STR
-            ));
 
-            if (!string.IsNullOrWhiteSpace(tpkd.gamekey))
+
+            //string redemptionTag = string.IsNullOrEmpty(tpkd?.redeemed_key_val?.ToString()) ? UNREDEEMED_STR : REDEEMED_STR;
+
+            gameInfo.Tags.Add(new MetadataNameProperty(GetRedeemedTag(tpkd)));
+            
+
+            //gameInfo.Tags.Add(new MetadataNameProperty(
+            //    string.IsNullOrEmpty(tpkd.redeemed_key_val.ToString()) ? UNREDEEMED_STR : REDEEMED_STR
+            //));
+
+            if (!string.IsNullOrWhiteSpace(tpkd?.gamekey))
             {
-                gameInfo.Links.Add(MakeLink(tpkd.gamekey));
+                gameInfo.Links.Add(MakeLink(tpkd?.gamekey));
             }
 
             return PlayniteApi.Database.ImportGame(gameInfo, this);
@@ -205,7 +268,10 @@ namespace HumbleKeys
         #region === Helper Methods ============
         private static string GetGameId(Order.TpkdDict.Tpk tpk) => $"{tpk.machine_name}_{tpk.gamekey}";
         private static Link MakeLink(string gamekey) => new Link("Humble Purchase URL", string.Format(humblePurchaseUrlMask, gamekey) );
-        private static bool IsKeyPresent(Order.TpkdDict.Tpk t) => !string.IsNullOrWhiteSpace(t.redeemed_key_val);
+        private static bool IsKeyNull(Order.TpkdDict.Tpk t) => t?.redeemed_key_val == null;
+        private static bool IsKeyPresent(Order.TpkdDict.Tpk t) => !IsKeyNull(t);
+        private static string GetRedeemedTag(Order.TpkdDict.Tpk t) => IsKeyPresent(t) ? REDEEMED_STR : UNREDEEMED_STR;
+
         #endregion
     }
 }
