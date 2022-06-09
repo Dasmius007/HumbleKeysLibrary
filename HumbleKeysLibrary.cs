@@ -67,12 +67,12 @@ namespace HumbleKeys
             catch (Exception e)
             {
                 importError = e;
-                logger.Error($"HKL: error {e}");
+                logger.Error($"Humble Keys Library: error {e}");
             }
 
             if (importError != null)
             {
-                logger.Error($"HKL: importError {dbImportMessageId}");
+                logger.Error($"Humble Keys Library: importError {dbImportMessageId}");
                 PlayniteApi.Notifications.Add(new NotificationMessage(
                     dbImportMessageId,
                     string.Format(PlayniteApi.Resources.GetString("LOCLibraryImportError"), Name) +
