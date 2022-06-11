@@ -70,6 +70,8 @@
     <None Include="extension.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Manifests\HumbleKeysLibrary_AddonDB.yaml" />
+    <None Include="Manifests\HumbleKeysLibrary_Installer.yaml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
