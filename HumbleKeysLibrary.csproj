@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HumbleKeysLibrary</RootNamespace>
+    <RootNamespace>HumbleKeys</RootNamespace>
     <AssemblyName>HumbleKeysLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -61,6 +61,10 @@
     <Compile Include="HumbleKeysLibrarySettingsView.xaml.cs">
       <DependentUpon>HumbleKeysLibrarySettingsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\ContentChoice.cs" />
+    <Compile Include="Models\ChoiceMonthV2.cs" />
+    <Compile Include="Models\ChoiceMonthV3.cs" />
+    <Compile Include="Models\IChoiceMonth.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\HumbleKeysAccountClient.cs" />

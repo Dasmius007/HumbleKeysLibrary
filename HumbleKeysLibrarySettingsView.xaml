@@ -31,9 +31,13 @@
 					IsEnabled="{Binding IsChecked, ElementName=CheckHumbleConnectAccount}">
 
 			<CheckBox Margin="0,10,0,0"
-							IsChecked="{Binding IgnoreRedeemedKeys}"
-							Content="Ignore Redeemed Keys"
-							ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed."/>
+			          IsChecked="{Binding IgnoreRedeemedKeys}"
+			          Content="Ignore Redeemed Keys"
+			          ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed."/>
+			<CheckBox Margin="0,10,0,0"
+			          IsChecked="{Binding ImportChoiceKeys}"
+			          Content="Import Choice Games"
+			          ToolTip="When checked, Humble Keys Library will import Humble Choice games for months that the User is subscribed for."/>
 
 
 			<StackPanel Orientation="Horizontal" Margin="0,10,0,0">

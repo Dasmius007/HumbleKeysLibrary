@@ -10,6 +10,9 @@ namespace HumbleKeys.Models
             public string category;
             public string machine_name;
             public string human_name;
+            public string choice_url;
+            public bool is_subs_v2_product;
+            public bool is_subs_v3_product;
         }
 
         public class SubProduct

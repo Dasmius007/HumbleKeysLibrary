@@ -17,6 +17,7 @@ namespace HumbleKeys
 
         public bool ConnectAccount { get; set; } = false;
         public bool IgnoreRedeemedKeys { get; set; } = false;
+        public bool ImportChoiceKeys { get; set; } = false;
 
         public List<string> keyTypeWhitelist = new List<string>() {
             "gog",
