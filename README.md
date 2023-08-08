@@ -8,8 +8,8 @@ The default Humble Library plug-in only reports DRM-free games, not the keys for
 2. Drag-and-drop the .pext file onto your Playnite window.
 
 ## Settings
-`Ignore Redeemed Keys` is a setting added in v0.1.4. When checked, HumbleKeysLibrary will not import keys that have been revealed on the Humble site.
-
+* `Ignore Redeemed Keys` is a setting added in v0.1.4. When checked, HumbleKeysLibrary will not import keys that have been revealed on the Humble site.
+* `Import Choice Games` is a setting added in v.0.1.5. When checked, purchases that are detected as Humble Choice Bundles will have the bundle's individual games added.
 ## Details
 ### Tags
 * `Key: Redeemed` - this tag is attached to entries that have been redeemed. Corresponds to Humble API `tpkd_dict.all_tpks[n].redeemed_key_value`.
