@@ -18,6 +18,7 @@ namespace HumbleKeys
         public bool IgnoreRedeemedKeys { get; set; } = false;
         public bool ImportChoiceKeys { get; set; } = false;
         public bool CacheEnabled { get; set; } = false;
+        public string CurrentTagMethodology { get; set; } = "none";
 
         [DontSerialize]
         public List<string> keyTypeWhitelist = new List<string>() {

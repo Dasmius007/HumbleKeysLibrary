@@ -134,10 +134,10 @@ namespace HumbleKeys.Services
             streamWriter.Close();
         }
         
-        internal List<Order> GetOrders(List<string> gamekeys, bool includeChoiceMonths = false)
+        internal Dictionary<string, Order> GetOrders(List<string> gameKeys, bool includeChoiceMonths = false)
         {
-            var orders = new List<Order>();
-            foreach (var key in gamekeys)
+            var orders = new Dictionary<string, Order>();
+            foreach (var key in gameKeys)
             {
                 var orderUri = string.Format(orderUrlMask, key);
                 var cacheFileName = $"{_localCachePath}/order/{key}.json";
@@ -161,7 +161,7 @@ namespace HumbleKeys.Services
                 {
                     AddChoiceMonthlyGames(order);
                 }
-                orders.Add(order);
+                orders.Add(order.gamekey, order);
             }
 
             return orders;
