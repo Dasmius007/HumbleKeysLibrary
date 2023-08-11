@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Playnite.SDK.Data;
 
 
 namespace HumbleKeys.Services
@@ -65,19 +66,20 @@ namespace HumbleKeys.Services
         }
 
 
-        internal List<Order> GetOrders(List<string> gamekeys, bool includeChoiceMonths = false)
+        internal Dictionary<string, Order> GetOrders(List<string> gameKeys, bool includeChoiceMonths = false)
         {
-            var orders = new List<Order>();
-            foreach (var key in gamekeys)
+            var orders = new Dictionary<string, Order>();
+            foreach (var key in gameKeys)
             {
                 webView.NavigateAndWait(string.Format(orderUrlMask, key));
                 var strContent = webView.GetPageText();
-                var order = FromJson<Order>(strContent);
-                if (string.Equals(order.product.category, @"subscriptioncontent", StringComparison.Ordinal) && !string.IsNullOrEmpty(order.product.choice_url) && includeChoiceMonths)
+                var order = Serialization.FromJson<Order>(strContent);
+
+                if (string.Equals(order.product.category, SubscriptionCategory, StringComparison.Ordinal) && !string.IsNullOrEmpty(order.product.choice_url) && includeChoiceMonths)
                 {
                     AddChoiceMonthlyGames(order);
                 }
-                orders.Add(order);
+                orders.Add(order.gamekey, order);
             }
 
             return orders;
