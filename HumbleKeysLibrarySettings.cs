@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using Playnite.SDK;
+﻿using Playnite.SDK;
 using HumbleKeys.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using HumbleKeys.Services;
-
+using Playnite.SDK.Data;
 
 namespace HumbleKeys
 {
@@ -17,7 +16,11 @@ namespace HumbleKeys
 
         public bool ConnectAccount { get; set; } = false;
         public bool IgnoreRedeemedKeys { get; set; } = false;
+        public bool ImportChoiceKeys { get; set; } = false;
+        public bool CacheEnabled { get; set; } = false;
+        public string CurrentTagMethodology { get; set; } = "none";
 
+        [DontSerialize]
         public List<string> keyTypeWhitelist = new List<string>() {
             "gog",
             "nintendo_direct",
@@ -26,7 +29,7 @@ namespace HumbleKeys
             "steam",
         };
 
-        [JsonIgnore]
+        [DontSerialize]
         public bool IsUserLoggedIn
         {
             get
@@ -43,7 +46,7 @@ namespace HumbleKeys
             }
         }
 
-        [JsonIgnore]
+        [DontSerialize]
         public RelayCommand<object> LoginCommand
         {
             get => new RelayCommand<object>((a) =>

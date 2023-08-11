@@ -1,5 +1,4 @@
 ﻿using Playnite.SDK;
-using Playnite.SDK.Data;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using HumbleKeys.Models;
+using HumbleKeys.Services;
 
 namespace HumbleKeys
 {
@@ -30,7 +30,7 @@ namespace HumbleKeys
         public override Guid Id { get; } = Guid.Parse("62ac4052-e08a-4a1a-b70a-c2c0c3673bb9");
         public override string Name => "Humble Keys Library";
 
-        // Implementing Client adds ability to open it via special menu in playnite.
+        // Implementing Client adds ability to open it via special menu in Playnite.
         public override LibraryClient Client { get; } = new HumbleKeysLibraryClient();
         #endregion
 
@@ -62,7 +62,7 @@ namespace HumbleKeys
             {
                 var orders = ScrapeOrders();
                 var selectedTpkds = SelectTpkds(orders);
-                TpkdsIntake(selectedTpkds, ref importedGames);
+                TpkdsIntake(orders, selectedTpkds, ref importedGames);
             }
             catch (Exception e)
             {
@@ -88,57 +88,76 @@ namespace HumbleKeys
             return importedGames;
         }
 
-        public List<Order> ScrapeOrders()
+        public Dictionary<string, Order> ScrapeOrders()
         {
-            var orders = new List<Order>();
+            Dictionary<string, Order> orders;
             using (var view = PlayniteApi.WebViews.CreateOffscreenView(
-                    new WebViewSettings { JavaScriptEnabled = false }))
+                       new WebViewSettings { JavaScriptEnabled = false }))
             {
-                var api = new Services.HumbleKeysAccountClient(view);
+                var api = new Services.HumbleKeysAccountClient(view,
+                    new HumbleKeysAccountClientSettings
+                    {
+                        CacheEnabled = Settings.CacheEnabled,
+                        CachePath = $"{PlayniteApi.Paths.ExtensionsDataPath}\\{Id}"
+                    });
                 var keys = api.GetLibraryKeys();
-                orders = api.GetOrders(keys);
+                orders = api.GetOrders(keys, Settings.ImportChoiceKeys);
             }
 
             return orders;
         }
 
-        public List<Order.TpkdDict.Tpk> SelectTpkds(List<Order> orders)
+        public IEnumerable<IGrouping<string, Order.TpkdDict.Tpk>> SelectTpkds(Dictionary<string,Order> orders)
         {
-            return orders
+            return orders.Select(kv => kv.Value)
                 .SelectMany(a => a.tpkd_dict?.all_tpks)
                 .Where(t => t != null
-                    && Settings.keyTypeWhitelist.Contains(t.key_type)
-                    && !string.IsNullOrWhiteSpace(t.gamekey)
-                    && !(Settings.IgnoreRedeemedKeys && IsKeyPresent(t) )
-                )
-                .ToList();
+                            && Settings.keyTypeWhitelist.Contains(t.key_type)
+                            && !string.IsNullOrWhiteSpace(t.gamekey)
+                            && !(Settings.IgnoreRedeemedKeys && IsKeyPresent(t))
+                ).GroupBy(tpk => tpk.gamekey);
         }
 
 
-        protected void TpkdsIntake(List<Order.TpkdDict.Tpk> tpkds, ref List<Game> importedGames)
+        protected void TpkdsIntake(Dictionary<string,Order> orders, IEnumerable<IGrouping<string, Order.TpkdDict.Tpk>> tpkds, ref List<Game> importedGames)
         {
-            foreach (var tpkd in tpkds)
+            foreach (var tpkdGroup in tpkds)
             {
-                string gameId = GetGameId(tpkd);
-
-                Game alreadyImported = 
-                    PlayniteApi.Database.Games.FirstOrDefault(
-                        g => g.GameId == GetGameId(tpkd) && g.PluginId == Id);
-
-                if (alreadyImported == null)
+                var tpkdGroupEntries = tpkdGroup.AsEnumerable();
+                Tag groupTag = null;
+                var groupEntries = tpkdGroupEntries.ToList();
+                if (Settings.ImportChoiceKeys && Settings.CurrentTagMethodology != "none" && groupEntries.Count() > 1)
                 {
-                    importedGames.Add(ImportNewGame(tpkd));
+                    var isHumbleMonthly = orders[tpkdGroup.Key].product.human_name.Contains("Humble Monthly");
+                    if (Settings.CurrentTagMethodology == "all" || Settings.CurrentTagMethodology == "monthly" && isHumbleMonthly)
+                    {
+                        groupTag = PlayniteApi.Database.Tags.Add($"Bundle: {orders[tpkdGroup.Key].product.human_name}");
+                    }
                 }
-                else
+                
+                foreach (var tpkd in groupEntries)
                 {
-                    UpdateExistingGame(alreadyImported, tpkd);
+                    var gameId = GetGameId(tpkd);
+
+                    var alreadyImported = 
+                        PlayniteApi.Database.Games.FirstOrDefault(
+                            g => g.GameId == GetGameId(tpkd) && g.PluginId == Id);
+
+                    if (alreadyImported == null)
+                    {
+                        importedGames.Add(ImportNewGame(tpkd, groupTag));
+                    }
+                    else
+                    {
+                        UpdateExistingGame(alreadyImported, tpkd, groupTag);
+                    }
                 }
             }
         }
 
-        private Game ImportNewGame(Models.Order.TpkdDict.Tpk tpkd)
+        Game ImportNewGame(Order.TpkdDict.Tpk tpkd, Tag groupTag = null)
         {
-            GameMetadata gameInfo = new GameMetadata()
+            var gameInfo = new GameMetadata()
             {
                 Name = tpkd.human_name,
                 GameId = GetGameId(tpkd),
@@ -150,25 +169,40 @@ namespace HumbleKeys
             };
             
             gameInfo.Tags.Add(new MetadataNameProperty(GetRedeemedTag(tpkd)));
-            
             if (!string.IsNullOrWhiteSpace(tpkd?.gamekey))
             {
                 gameInfo.Links.Add(MakeLink(tpkd?.gamekey));
             }
-
-            return PlayniteApi.Database.ImportGame(gameInfo, this);
+            PlayniteApi.Database.BeginBufferUpdate();
+            var game = PlayniteApi.Database.ImportGame(gameInfo, this);
+            if (groupTag != null)
+            {
+                game.Tags.Add(groupTag);
+                PlayniteApi.Database.Games.Update(game);
+            }
+            PlayniteApi.Database.EndBufferUpdate();
+            return game;
         }
 
-        private void UpdateExistingGame(Game existingGame, Order.TpkdDict.Tpk tpkd)
+        void UpdateExistingGame(Game existingGame, Order.TpkdDict.Tpk tpkd, Tag groupTag = null)
         {
             if (existingGame == null) { return; }
             if (!Settings.keyTypeWhitelist.Contains(tpkd.key_type)) { return; }
 
-            existingGame.Tags.RemoveAll(t => PAST_TAGS.Contains(t.Name));
+            var existingTagIds = existingGame.Tags.Where(t => PAST_TAGS.Contains(t.Name)).Select(tag => tag.Id);
+            existingGame.TagIds.RemoveAll(tagId => existingTagIds.Contains(tagId));
 
-            existingGame.Tags.Add(new Tag( IsKeyPresent(tpkd) ? REDEEMED_STR : UNREDEEMED_STR ));
-
+            PlayniteApi.Database.BeginBufferUpdate();
+            existingGame.TagIds.Add(PlayniteApi.Database.Tags.Add(IsKeyPresent(tpkd) ? REDEEMED_STR : UNREDEEMED_STR ).Id);
+            if (groupTag != null)
+            {
+                if (existingGame.Tags.All(tag => tag.Id != groupTag.Id))
+                {
+                    existingGame.TagIds.Add(groupTag.Id);
+                }
+            }
             PlayniteApi.Database.Games.Update(existingGame);
+            PlayniteApi.Database.EndBufferUpdate();
         }
 
         #region === Helper Methods ============

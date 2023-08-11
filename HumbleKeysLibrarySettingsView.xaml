@@ -31,11 +31,37 @@
 					IsEnabled="{Binding IsChecked, ElementName=CheckHumbleConnectAccount}">
 
 			<CheckBox Margin="0,10,0,0"
-							IsChecked="{Binding IgnoreRedeemedKeys}"
-							Content="Ignore Redeemed Keys"
-							ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed."/>
-
-
+			          IsChecked="{Binding IgnoreRedeemedKeys}"
+			          Content="Ignore Redeemed Keys"
+			          ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed."/>
+			<CheckBox Margin="0,10,0,0"
+			          IsChecked="{Binding ImportChoiceKeys}"
+			          Content="Import Choice Games"
+			          Name="ImportChoiceKeys"
+			          ToolTip="When checked, Humble Keys Library will import Humble Choice games for months that the User is subscribed for." Unchecked="ImportChoiceKeys_OnUnchecked"/>
+			<StackPanel Margin="0 10 0 10" Width="Auto" Orientation="Horizontal">
+				<Grid Width="Auto">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<TextBlock
+				          Name="TagWithBundleName"
+				          Text="Create Tags for Bundle Names"
+				          ToolTip="When None is not selected, Humble Keys Library will add a new Tag per Bundle Name"
+				          Grid.Column="0"/>
+					<ListBox Margin="10 0 0 0 " Name="TagMethodology" SelectedValuePath="Tag" SelectedValue="{Binding CurrentTagMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single">
+						<ListBoxItem Tag="none" ToolTip="Do not create Tags based on Bundle Name">None</ListBoxItem>
+						<ListBoxItem Tag="monthly" ToolTip="Create only Tags for Humble Choice Monthly bundles" IsEnabled="{Binding IsChecked,ElementName=ImportChoiceKeys}">Monthly Only</ListBoxItem>
+						<ListBoxItem Tag="all" ToolTip="Create Tags for all Bundles">All</ListBoxItem>
+					</ListBox>
+				</Grid>
+			</StackPanel>
+			<CheckBox Margin="0,10,0,0"
+			          IsChecked="{Binding CacheEnabled}"
+			          Content="Enable Cache"
+			          Name="EnableCache"
+			          ToolTip="When checked, Humble Keys Library will create a persistent Cache in ExtensionsData directory, if a Cache entry exists, it will no longer be retrieved from Humble"/>
 			<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 				<!--<Button Content="{DynamicResource LOCAuthenticateLabel}" HorizontalAlignment="Left"
 						Command="{Binding LoginCommand}" Margin="0,5,5,5"/>-->
