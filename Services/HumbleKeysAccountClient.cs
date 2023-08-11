@@ -19,6 +19,7 @@ namespace HumbleKeys.Services
         private const string logoutUrl = @"https://www.humblebundle.com/logout?goto=/";
         private const string orderUrlMask = @"https://www.humblebundle.com/api/v1/order/{0}?all_tpkds=true";
 
+        const string SubscriptionCategory = @"subscriptioncontent";
         public HumbleKeysAccountClient(IWebView webView) { this.webView = webView; }
 
 
