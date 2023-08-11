@@ -18,42 +18,41 @@ namespace HumbleKeys.Services
         private const string logoutUrl = @"https://www.humblebundle.com/logout?goto=/";
         private const string orderUrlMask = @"https://www.humblebundle.com/api/v1/order/{0}?all_tpkds=true";
 
-        const string SubscriptionCategory = @"subscriptioncontent";
-        readonly bool _preferCache;
-        readonly string _localCachePath;
-        readonly IHumbleKeysAccountClientSettings _clientSettings;
+        const string subscriptionCategory = @"subscriptioncontent";
+        readonly bool preferCache;
+        readonly string localCachePath;
         public HumbleKeysAccountClient(IWebView webView) { this.webView = webView; }
         
         public HumbleKeysAccountClient(IWebView webView, IHumbleKeysAccountClientSettings clientSettings) : this(webView)
         {
-            _localCachePath = Directory.Exists(clientSettings.CachePath) ? clientSettings.CachePath : new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
+            localCachePath = Directory.Exists(clientSettings.CachePath) ? clientSettings.CachePath : new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
 
-            _preferCache = clientSettings.CacheEnabled;
+            preferCache = clientSettings.CacheEnabled;
             // initialise folder structure for local cache
             var cachePaths = new[] { "order", "membership" };
-            if (_preferCache)
+            if (preferCache)
             {
                 foreach (var cachePath in cachePaths)
                 {
-                    if (!Directory.Exists($"{_localCachePath}\\{cachePath}"))
+                    if (!Directory.Exists($"{localCachePath}\\{cachePath}"))
                     {
-                        Directory.CreateDirectory($"{_localCachePath}\\{cachePath}");
+                        Directory.CreateDirectory($"{localCachePath}\\{cachePath}");
                     }
                 }
             }
             else
             {
-                File.Delete($"{_localCachePath}\\gameKeys.json");
+                File.Delete($"{localCachePath}\\gameKeys.json");
                 foreach (var cachePath in cachePaths)
                 {
-                    if (!Directory.Exists($"{_localCachePath}\\{cachePath}")) continue;
+                    if (!Directory.Exists($"{localCachePath}\\{cachePath}")) continue;
                     
-                    var cachedFiles = Directory.EnumerateFiles($"{_localCachePath}\\{cachePath}");
+                    var cachedFiles = Directory.EnumerateFiles($"{localCachePath}\\{cachePath}");
                     foreach (var cachedFile in cachedFiles)
                     {
                         File.Delete(cachedFile);
                     }
-                    Directory.Delete($"{_localCachePath}\\{cachePath}");
+                    Directory.Delete($"{localCachePath}\\{cachePath}");
                 }
                 logger.Info("Cache cleared");
             }
@@ -86,8 +85,8 @@ namespace HumbleKeys.Services
 
         internal List<string> GetLibraryKeys()
         {
-            var keysCacheFilename = $"{_localCachePath}\\gamekeys.json";
-            if (_preferCache)
+            var keysCacheFilename = $"{localCachePath}\\gamekeys.json";
+            if (preferCache)
             {
                 // Request may be cached in local filesystem to prevent spamming Humble
                 var cachedData = GetCacheContent<List<string>>(keysCacheFilename);
@@ -105,7 +104,7 @@ namespace HumbleKeys.Services
                 var strKeys = match.Groups[1].Value;
                 logger.Trace(
                     $"Request:{libraryUrl} Content:{Serialization.ToJson(Serialization.FromJson<List<string>>(strKeys), true)}");
-                if (_preferCache)
+                if (preferCache)
                 {
                     CreateCacheContent(keysCacheFilename,strKeys);
                 }
@@ -140,16 +139,16 @@ namespace HumbleKeys.Services
             foreach (var key in gameKeys)
             {
                 var orderUri = string.Format(orderUrlMask, key);
-                var cacheFileName = $"{_localCachePath}/order/{key}.json";
+                var cacheFileName = $"{localCachePath}/order/{key}.json";
                 Order order = null;
-                if (_preferCache)
+                if (preferCache)
                 {
                     order = GetCacheContent<Order>(cacheFileName);
                 }
                 if (order == null) {
                     webView.NavigateAndWait(orderUri);
                     var strContent = webView.GetPageText();
-                    if (_preferCache)
+                    if (preferCache)
                     {
                         CreateCacheContent(cacheFileName,strContent);
                     }
@@ -157,7 +156,7 @@ namespace HumbleKeys.Services
                 }
                 logger.Trace($"Request:{orderUri} Content:{Serialization.ToJson(order, true)}");
 
-                if (string.Equals(order.product.category, SubscriptionCategory, StringComparison.Ordinal) && !string.IsNullOrEmpty(order.product.choice_url) && includeChoiceMonths)
+                if (string.Equals(order.product.category, subscriptionCategory, StringComparison.Ordinal) && !string.IsNullOrEmpty(order.product.choice_url) && includeChoiceMonths)
                 {
                     AddChoiceMonthlyGames(order);
                 }
@@ -172,8 +171,8 @@ namespace HumbleKeys.Services
             var cachePath = $"membership/{order.product.choice_url}";
             var choiceUrl = $"https://www.humblebundle.com/{cachePath}";
             var strChoiceMonth = string.Empty;
-            var orderCacheFilename = $"{_localCachePath}/{cachePath}.json";
-            if (_preferCache)
+            var orderCacheFilename = $"{localCachePath}/{cachePath}.json";
+            if (preferCache)
             {
                 // Request may be cached in local filesystem to prevent spamming Humble
                 strChoiceMonth = GetCacheContent(orderCacheFilename);
@@ -187,7 +186,7 @@ namespace HumbleKeys.Services
                 if (match.Success)
                 {
                     strChoiceMonth = match.Groups[1].Value;
-                    if (_preferCache)
+                    if (preferCache)
                     {
                         // save data into cache
                         CreateCacheContent(orderCacheFilename, strChoiceMonth);
