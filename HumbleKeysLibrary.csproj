@@ -67,6 +67,8 @@
     <Compile Include="Models\Order.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\HumbleKeysAccountClient.cs" />
+    <Compile Include="Services\HumbleKeysAccountClientSettings.cs" />
+    <Compile Include="Services\IHumbleKeysAccountClientSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

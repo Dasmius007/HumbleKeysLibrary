@@ -13,10 +13,16 @@ namespace HumbleKeys.Models
                 public Dictionary<string,ContentChoice> game_data;
             }
 
+            public string gamekey { get; }
+
+            public string title { get; }
+            
             public ContentChoiceDataContainer contentChoiceData;
         }
 
         public ContentChoiceOptions contentChoiceOptions;
+        public string GameKey => contentChoiceOptions.gamekey;
+        public string Title => contentChoiceOptions.title;
         public List<ContentChoice> ContentChoices => contentChoiceOptions.contentChoiceData.game_data.Values.ToList();
     }
 }

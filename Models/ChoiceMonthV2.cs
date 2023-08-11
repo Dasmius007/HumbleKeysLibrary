@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using Playnite.SDK.Data;
 
 namespace HumbleKeys.Models
 {
@@ -14,17 +14,24 @@ namespace HumbleKeys.Models
                 {
                     public Dictionary<string, ContentChoice> content_choices;
                 }
-                [JsonProperty("initial")]
+                [SerializationPropertyName("initial")]
                 public ContentChoiceData initial;
-                [JsonProperty("initial-get-all-games")]
+                [SerializationPropertyName("initial-get-all-games")]
                 public ContentChoiceData initialGetAllGames;
             }
+
+            public string gamekey { get; }
+
+            public string title { get; }
 
             public ContentChoiceDataContainer contentChoiceData;
         }
 
         public ContentChoiceOptions contentChoiceOptions;
 
+        public string GameKey => contentChoiceOptions.gamekey;
+
+        public string Title => contentChoiceOptions.title;
         public List<ContentChoice> ContentChoices => contentChoiceOptions.contentChoiceData.initial?.content_choices.Values.ToList()??contentChoiceOptions.contentChoiceData.initialGetAllGames.content_choices.Values.ToList();
     }
 }

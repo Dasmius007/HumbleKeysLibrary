@@ -37,9 +37,12 @@
 			<CheckBox Margin="0,10,0,0"
 			          IsChecked="{Binding ImportChoiceKeys}"
 			          Content="Import Choice Games"
-			          ToolTip="When checked, Humble Keys Library will import Humble Choice games for months that the User is subscribed for."/>
-
-
+			          Name="ImportChoiceKeys"/>
+			<CheckBox Margin="0,10,0,0"
+			          IsChecked="{Binding CacheEnabled}"
+			          Content="Enable Cache"
+			          Name="EnableCache"
+			          ToolTip="When checked, Humble Keys Library will create a persistent Cache in ExtensionsData directory, if a Cache entry exists, it will no longer be retrieved from Humble"/>
 			<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 				<!--<Button Content="{DynamicResource LOCAuthenticateLabel}" HorizontalAlignment="Left"
 						Command="{Binding LoginCommand}" Margin="0,5,5,5"/>-->

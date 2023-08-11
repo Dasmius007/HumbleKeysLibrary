@@ -1,5 +1,4 @@
 ﻿using Playnite.SDK;
-using Playnite.SDK.Data;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using HumbleKeys.Models;
+using HumbleKeys.Services;
 
 namespace HumbleKeys
 {
@@ -92,12 +92,16 @@ namespace HumbleKeys
         {
             var orders = new List<Order>();
             using (var view = PlayniteApi.WebViews.CreateOffscreenView(
-                    new WebViewSettings { JavaScriptEnabled = false }))
+                       new WebViewSettings { JavaScriptEnabled = false }))
             {
-                var api = new Services.HumbleKeysAccountClient(view);
+                var api = new Services.HumbleKeysAccountClient(view,
+                    new HumbleKeysAccountClientSettings
+                    {
+                        CacheEnabled = Settings.CacheEnabled,
+                        CachePath = $"{PlayniteApi.Paths.ExtensionsDataPath}\\{Id}"
+                    });
                 var keys = api.GetLibraryKeys();
                 orders = api.GetOrders(keys, Settings.ImportChoiceKeys);
-                
             }
 
             return orders;
@@ -108,30 +112,30 @@ namespace HumbleKeys
             return orders
                 .SelectMany(a => a.tpkd_dict?.all_tpks)
                 .Where(t => t != null
-                    && Settings.keyTypeWhitelist.Contains(t.key_type)
-                    && !string.IsNullOrWhiteSpace(t.gamekey)
-                    && !(Settings.IgnoreRedeemedKeys && IsKeyPresent(t) )
+                            && Settings.keyTypeWhitelist.Contains(t.key_type)
+                            && !string.IsNullOrWhiteSpace(t.gamekey)
+                            && !(Settings.IgnoreRedeemedKeys && IsKeyPresent(t))
                 )
                 .ToList();
         }
 
 
         protected void TpkdsIntake(List<Order.TpkdDict.Tpk> tpkds, ref List<Game> importedGames)
-        {
+                {
             foreach (var tpkd in tpkds)
-            {
+                {
                 string gameId = GetGameId(tpkd);
 
                 Game alreadyImported = 
-                    PlayniteApi.Database.Games.FirstOrDefault(
-                        g => g.GameId == GetGameId(tpkd) && g.PluginId == Id);
+                        PlayniteApi.Database.Games.FirstOrDefault(
+                            g => g.GameId == GetGameId(tpkd) && g.PluginId == Id);
 
-                if (alreadyImported == null)
-                {
+                    if (alreadyImported == null)
+                    {
                     importedGames.Add(ImportNewGame(tpkd));
-                }
-                else
-                {
+                    }
+                    else
+                    {
                     UpdateExistingGame(alreadyImported, tpkd);
                 }
             }
