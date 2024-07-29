@@ -62,6 +62,8 @@ namespace HumbleKeys.Models
                 public string human_name;
                 public string @class;
                 public string library_family_name;
+                public string steam_app_id;
+                public bool is_expired;
                 public Newtonsoft.Json.Linq.JToken redeemed_key_val;
             }
 

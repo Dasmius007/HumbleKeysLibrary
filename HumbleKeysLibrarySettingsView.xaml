@@ -33,7 +33,7 @@
 			<CheckBox Margin="0,10,0,0"
 			          IsChecked="{Binding IgnoreRedeemedKeys}"
 			          Content="Ignore Redeemed Keys"
-			          ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed."/>
+			          ToolTip="When checked, Humble Keys Library does not import keys that have already been redeemed. (NOTE: Unchecking this and running a library sync will REMOVE prior imported games that have been redeemed)"/>
 			<CheckBox Margin="0,10,0,0"
 			          IsChecked="{Binding ImportChoiceKeys}"
 			          Content="Import Choice Games"
