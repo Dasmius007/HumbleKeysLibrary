@@ -17,8 +17,7 @@ The default Humble Library plug-in only reports DRM-free games, not the keys for
 ### Tags
 * `Key: Redeemed` - this tag is attached to entries that have been redeemed. Corresponds to Humble API `tpkd_dict.all_tpks[n].redeemed_key_value`.
 * `Key: Unredeemed` - this tag is attached to entries that have not been redeemed. Corresponds to Humble API `tpkd_dict.all_tpks[n].redeemed_key_value`.
-* `Bundle: [Bundle Name]` - this tag is attached to entries that belong to a  Bundle. Corresponds to Humble API `order.product.human_name`
-
+* `Bundle: [Bundle Name]` - will be created per Bundle of keys if the option to create grouping tags is enabled (when `product.category=='subscriptioncontent' and product.choice_url has a value`).
 ### Key Types
 Humble API lists key types in `tpkd_dict.all_tpks[n].key_type`, which corresponds to the services on which the key can be redeemed. Supported keys include:
 * `gog`
