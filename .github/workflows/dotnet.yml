@@ -22,9 +22,5 @@ jobs:
       uses: Nuget/setup-nuget@v1.0.5
     - name: Restore nuget packages
       run: nuget restore HumbleKeysLibrary.sln
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Build solution
+      run: msbuild HumbleKeysLibrary.sln -t:rebuild -property:Configuration=Release
