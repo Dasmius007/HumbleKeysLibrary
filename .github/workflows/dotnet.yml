@@ -21,7 +21,7 @@ jobs:
     - name: Setup Nuget
       uses: Nuget/setup-nuget@v1.0.5
     - name: Restore nuget packages
-      run: nuget restore HumbleKeysLibrary.csproj
+      run: nuget restore HumbleKeysLibrary.sln
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
