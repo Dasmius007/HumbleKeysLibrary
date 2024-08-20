@@ -3,13 +3,19 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: MSBuild
+name: Build PEXT
 
 on:
   push:
     branches: [ "master" ]
+    # build handled by release packaging workflow
+    tags-ignore:
+      - v0.*
   pull_request:
     branches: [ "master" ]
+    # build handled by release packaging workflow
+    tags-ignore:
+      - v0.*
 
 env:
   # Path to the solution file relative to the root of the project.
