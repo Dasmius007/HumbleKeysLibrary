@@ -53,7 +53,7 @@ jobs:
         if: ${{steps.versioning_tag.outputs.major-version!= steps.versioning_branch.outputs.major-version}}
         id: version_major_override
         run: |
-          echo "NEXT_VERSION=${{}}" >> $GITHUB_ENV
+          echo "NEXT_VERSION=${{steps.versioning_branch.outputs.NEXT_VERSION}}" >> $GITHUB_ENV
       - name: GitHub Tag Name example
         run: |
           echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
