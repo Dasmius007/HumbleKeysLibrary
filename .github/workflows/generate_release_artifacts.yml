@@ -26,17 +26,22 @@ jobs:
   versioning:
     runs-on: ubuntu-latest
     steps:
-      - name: Parse version from repository's tags
-        id: tag_versioning
-        uses: georgeneto/tags-versioning@v1
-        with:
-          repo-token: ${{secrets.GITHUB_TOKEN}}
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Get next version
+        id: tag_versioning
+        uses: reecetech/version-increment@2023.10.1
+        with:
+          scheme: semver
+          increment: patch
+          
       - name: Generate versions
+        id: version_generate_tag
         uses: HardNorth/github-version-generate@v1.4.0
         with:
           version-source: variable
-          version: $(echo {steps.tag_versioning.outputs.last:1})
+          version: ${{steps.tag_versioning.outputs.current-version}}
           
       - name: GitHub Tag Name example
         run: |
@@ -47,3 +52,4 @@ jobs:
           echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
           echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
           echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
+          echo "Semver generated steps.version_generate_tag.outputs.minor-version: ${{steps.version_generate_tag.outputs.minor-version}}
