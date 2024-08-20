@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Parse version from repository's tags
         id: tag_versioning
-        uses: georgeneto/tags-versioning
+        uses: georgeneto/tags-versioning@v1
         with:
           repo-token: ${{secrets.GITHUB_TOKEN}}
 
