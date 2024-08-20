@@ -29,27 +29,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Split branch name
+        env:
+          BRANCH: ${{ github.ref_name }}
+        id: version_branch
+        run: echo "::set-output name=branch_version::${BRANCH##*/v}" >> $GITHUB_OUTPUT
+        
       - name: Get next version
-        id: tag_versioning
+        id: versioning_tag
         uses: reecetech/version-increment@2023.10.1
         with:
           scheme: semver
           increment: patch
           
       - name: Generate versions
-        id: version_generate_tag
+        if: ${{startsWith(github.ref_name,'releases/v')}}
+        id: versioning_branch
         uses: HardNorth/github-version-generate@v1.4.0
         with:
           version-source: variable
-          version: ${{steps.tag_versioning.outputs.current-version}}
-          
+          version: ${{steps.branch_version.outputs.branch_version}}
+      - name: Override major version
+        if: ${{steps.versioning_tag.outputs.major-version!= steps.versioning_branch.outputs.major-version}}
+        id: version_major_override
+        run: |
+          echo "NEXT_VERSION=${{}}" >> $GITHUB_ENV
       - name: GitHub Tag Name example
         run: |
           echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
           echo "Tag name from github.ref_name: ${{  github.ref_name }}"
-          echo "Version parsed from tags: ${{steps.tag_versioning.outputs.tag}}
+          echo "Version parsed from tags: ${{steps.versioning_tag.outputs.tag}}
           echo "Semver generated env.CURRENT_VERSION: ${{env.CURRENT_VERSION}}
           echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
           echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
           echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
-          echo "Semver generated steps.version_generate_tag.outputs.minor-version: ${{steps.version_generate_tag.outputs.minor-version}}
+          echo "Semver generated steps.versioning_branch.outputs.minor-version: ${{steps.versioning_branch.outputs.minor-version}}
