@@ -41,7 +41,7 @@ jobs:
         env:
           BRANCH: ${{ github.ref_name }}
         id: version_branch
-        run: echo "::set-output name=branch_version::${BRANCH##*/v}" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=branch_version::${BRANCH:10}" >> $GITHUB_OUTPUT
         
       - name: Generate versions
         if: ${{startsWith(github.ref_name,'releases/v')}}
