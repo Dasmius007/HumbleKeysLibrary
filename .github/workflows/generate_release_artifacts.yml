@@ -55,7 +55,7 @@ jobs:
           version-source: variable
           version: ${{steps.version_branch.outputs.branch_version}}
       - name: Override major version
-        if: ${{steps.version_tag.outputs.major-version!= steps.version_branch_generate.outputs.major-version}}
+        if: ${{steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}
         id: version_major_override
         run: |
           echo "NEXT_VERSION=${{steps.version_branch_generate.outputs.NEXT_VERSION}}" >> $GITHUB_ENV
@@ -68,4 +68,4 @@ jobs:
           echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
           echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
           echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
-          echo "Semver generated steps.version_branch_generate.outputs.minor-version: ${{steps.version_branch_generate.outputs.minor-version}}
+          echo "Semver generated steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}
