@@ -41,7 +41,7 @@ jobs:
         env:
           BRANCH: ${{ github.ref_name }}
         id: version_branch
-        run: echo "branch_version::${BRANCH:10}" >> $GITHUB_OUTPUT
+        run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
         
       - name: GitHub Tag Name example
         run: |
