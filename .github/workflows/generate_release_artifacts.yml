@@ -43,10 +43,6 @@ jobs:
         id: version_branch
         run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
         
-      - name: GitHub Tag Name example
-        run: |
-          echo "Tag name from steps.version_branch.outputs.branch_version: ${{steps.version_branch.outputs.branch_version}}"
-          
       - name: Generate versions
         if: ${{startsWith(github.ref_name,'releases/v')}}
         id: version_branch_generate
@@ -55,6 +51,13 @@ jobs:
           version-source: variable
           version: ${{steps.version_branch.outputs.branch_version}}
           
+      - name: Debug if condition
+        run: |
+          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
+          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
+          echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
+          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
+      
       - name: Override major version
         if: ${{steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR && steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}
         id: version_major_override
