@@ -89,9 +89,10 @@ jobs:
     # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
     runs-on: windows-2019
     needs: [versioning]
+    env:
+      artifact-version: needs.versioning.outputs.artifact_version
+    
     steps:
-      - env: 
-          artifact-version: needs.versioning.outputs.artifact_version 
       - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
