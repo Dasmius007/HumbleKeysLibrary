@@ -23,13 +23,15 @@ permissions:
   contents: read
 
 jobs:
+  # if the commit was done as a tag, use the tag as semver
+  # if the commit was done via the releases/v* branch, use the branch name as semver, assumes work is being done to prepare for release and no tag exists for the branch version yet
   versioning:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Get next version
+      - name: Get next version from tags
         id: version_tag
         uses: reecetech/version-increment@2023.10.1
         with:
@@ -37,40 +39,82 @@ jobs:
           increment: patch
           
       - name: Split branch name
-        if: ${{startsWith(github.ref_name,'releases/v')}}
+        if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
         env:
           BRANCH: ${{ github.ref_name }}
         id: version_branch
         run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
         
-      - name: Generate versions
-        if: ${{startsWith(github.ref_name,'releases/v')}}
+      - name: Generate version from branch
+        if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
         id: version_branch_generate
         uses: HardNorth/github-version-generate@v1.4.0
         with:
           version-source: variable
           version: ${{steps.version_branch.outputs.branch_version}}
           
-      - name: Debug if condition
-        run: |
-          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
-          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
-          echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
-          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
+#      - name: Debug if condition
+#        run: |
+#          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
+#          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
+#          echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
+#          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
+#          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
       
-      - name: Override major version
-        if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
+      - name: Set env.ARTIFACT_VERSION
+        if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
         id: version_major_override
-        run: echo "NEXT_VERSION=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_ENV
+        run: echo "ARTIFACT_VERSION=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_ENV
         
-      - name: GitHub Tag Name example
-        run: |
-          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
-          echo "Version parsed from tags: steps.version_tag.outputs.version = ${{steps.version_tag.outputs.version}}
-          echo "Semver generated env.CURRENT_VERSION: ${{env.CURRENT_VERSION}}
-          echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
-          echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
-          echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
-          echo "Semver generated steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}
+      - name: Set env.TAG_VERSION
+        if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
+        id: version_major_override
+        run:
+          echo "TAG_VERSION=${{ steps.version_tag.outputs.current_version}}" >> $GITHUB_ENV
+      
+#      - name: GitHub Tag Name example
+#        run: |
+#          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
+#          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
+#          echo "Version parsed from tags: steps.version_tag.outputs.version = ${{steps.version_tag.outputs.version}}
+#          echo "Semver generated env.CURRENT_VERSION: ${{env.CURRENT_VERSION}}
+#          echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
+#          echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
+#          echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
+#          echo "Semver generated env.TAG_VERSION: ${{env.TAG_VERSION}}
+#          echo "Semver generated steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}
+
+  build:
+    #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
+    # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+      - name: Build app for release
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        # Add additional options to the MSBuild command line here (like platform or verbosity level).
+        # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+        run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}} /verbosity:diag
+
+      - name: Create Artifacts
+        uses: actions/upload-artifact@v4.3.6
+        with:
+          name: 'HumbleKeysLibrary_${{env.RELEASE_VERSION}}.pext'
+          path: ${{env.GITHUB_WORKSPACE}}/bin/Release/pext/HumbleKeysLibrary.pext
+          if-no-files-found: 'error'
+          overwrite: 'true'
+      
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v2.0.8
+        with: 
+          files: 'HumbleKeysLibrary_${{env.RELEASE_VERSION}}.pext'
+          draft: true
