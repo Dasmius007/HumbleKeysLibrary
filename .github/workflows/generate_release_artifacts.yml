@@ -64,7 +64,7 @@ jobs:
       - name: Set env.ARTIFACT_VERSION
         if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
         id: version_artifact_setenv
-        run: echo "ARTIFACT_VERSION=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_ENV
+        run: echo "ARTIFACT_VERSION=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
         
       - name: Set env.TAG_VERSION
         if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
@@ -88,8 +88,10 @@ jobs:
     #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
     # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
     runs-on: windows-2019
-
+    needs: [versioning]
     steps:
+      - env: 
+          artifact-version: needs.versioning.outputs.artifact_version 
       - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
@@ -108,13 +110,13 @@ jobs:
       - name: Create Artifacts
         uses: actions/upload-artifact@v4.3.6
         with:
-          name: 'HumbleKeysLibrary_${{env.RELEASE_VERSION}}.pext'
-          path: ${{env.GITHUB_WORKSPACE}}/bin/Release/pext/HumbleKeysLibrary.pext
+          name: 'HumbleKeysLibrary_${{env.artifact-version}}.pext'
+          path: bin/Release/pext/HumbleKeysLibrary.pext
           if-no-files-found: 'error'
           overwrite: 'true'
       
       - name: Create Draft Release
         uses: softprops/action-gh-release@v2.0.8
         with: 
-          files: 'HumbleKeysLibrary_${{env.RELEASE_VERSION}}.pext'
+          files: 'HumbleKeysLibrary_${{env.artifact-version}}.pext'
           draft: true
