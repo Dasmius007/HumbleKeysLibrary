@@ -91,6 +91,7 @@
   <Target Name="Gather artifact sources for PEXT creation" AfterTargets="Build">
     <Copy SourceFiles="$(OutputPath)\extension.yaml" DestinationFolder="$(OutputPath)/pext/sources"/>
     <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="$(OutputPath)/pext/sources"/>
+    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="$(OutputPath)/pext/sources"/>
     <Copy SourceFiles="$(OutputPath)\icon.png" DestinationFolder="$(OutputPath)/pext/sources"/>
   </Target>
   <Target Name="Create PEXT" AfterTargets="Gather artifact sources for PEXT creation">
