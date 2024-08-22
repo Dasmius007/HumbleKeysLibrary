@@ -90,8 +90,9 @@ jobs:
     runs-on: windows-2019
     needs: [versioning]
     env:
-      artifact-version: needs.versioning.outputs.artifact_version
-    
+      artifact-version: ${{ needs.versioning.outputs.artifact_version }}
+    permissions: 
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
