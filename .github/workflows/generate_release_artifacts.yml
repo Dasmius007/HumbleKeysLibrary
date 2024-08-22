@@ -57,6 +57,7 @@ jobs:
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
           echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
+          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
       
       - name: Override major version
         if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
