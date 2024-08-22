@@ -70,7 +70,7 @@ jobs:
         if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
         id: version_tag_setenv
         run:
-          echo "TAG_VERSION=${{ steps.version_tag.outputs.current_version}}" >> $GITHUB_ENV
+          echo "TAG_VERSION=${{ steps.version_tag.outputs.current_version}}" >> $GITHUB_OUTPUT
       
 #      - name: GitHub Tag Name example
 #        run: |
@@ -90,7 +90,8 @@ jobs:
     runs-on: windows-2019
     needs: [versioning]
     env:
-      artifact-version: ${{ needs.versioning.outputs.artifact_version }}
+      artifact-version: ${{ needs.versioning.outputs.artifact-version }}
+      tag-version: ${{ needs.versioning.outputs.tag-version }}
     permissions: 
       contents: write
     steps:
@@ -120,5 +121,7 @@ jobs:
       - name: Create Draft Release
         uses: softprops/action-gh-release@v2.0.8
         with: 
+          name: ${{env.artifact-version}}
+          body_path: changelog.md
           files: 'HumbleKeysLibrary_${{env.artifact-version}}.pext'
           draft: true
