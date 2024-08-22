@@ -133,5 +133,5 @@ jobs:
         with: 
           name: ${{env.artifact-version}}
           body_path: changelog.md
-          files: ${{steps.download-artifact.outputs.download-path}}'/HumbleKeysLibrary_${{env.artifact-version}}.pext'
+          files: 'artifacts/*'
           draft: true
