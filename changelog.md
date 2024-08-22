@@ -1,10 +1,14 @@
 ﻿## What's Changed
+# v0.3.1
+* Correct version number to match release version
+
+# v0.3.0
 New Features:
 * Added Optional feature to import games in Humble Choice Monthly bundles.
 * Added Optional feature to create tags based on Bundle Names (Either all Bundles or Monthly only)
 * Added Optional feature to cache API Objects as JSON files in the ExtensionsData directory
 
-# v0.2.0 Latest
+# v0.2.0
 Updated for new SDK. Also fixes Newtonsoft.Json exceptions thrown when Humble API returns **redeemed_key_val** 
 as a JObject instead of JString.
 
