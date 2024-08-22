@@ -1,3 +1,5 @@
+[![Build PEXT](https://github.com/ecenshu/HumbleKeysLibrary/actions/workflows/msbuild.yml/badge.svg?event=push)](https://github.com/ecenshu/HumbleKeysLibrary/actions/workflows/msbuild.yml)
+
 # HumbleKeysLibrary
 Humble Keys Library is a library plug-in extension for [Playnite](https://playnite.link/) which queries Humble Bundle for third-party keys.
 
@@ -9,9 +11,9 @@ The default Humble Library plug-in only reports DRM-free games, not the keys for
 
 ## Settings
 * `Ignore Redeemed Keys` is a setting added in v0.1.4. When checked, HumbleKeysLibrary will not import keys that have been revealed on the Humble site.
-* `Import Choice Games` is a setting added in v.0.1.5. When checked, purchases that are detected as Humble Choice Bundles will have the bundle's individual games added.
-* `Create Tags for Bundle Names` is a setting added in v.0.1.5. When an entry not `None` is selected, it will create a tag in the format of `Bundle: [Bundle Name]`
-* `Enable Cache` is a setting added in v.0.1.5. When checked, HumbleKeysLibrary will create json files for data retrieved from the Humble API in the ExtensionsData directory. If a Cache file exists, the API will not be queried. This applies to Purchases, Memberships (Humble Monthly) and Orders.
+* `Import Choice Games` is a setting added in v0.1.5. When checked, purchases that are detected as Humble Choice Bundles will have the bundle's individual games added.
+* `Create Tags for Bundle Names` is a setting added in v0.1.5. When an entry not `None` is selected, it will create a tag in the format of `Bundle: [Bundle Name]` (Updated in v0.3.0)
+* `Enable Cache` is a setting added in v0.3.0. When checked, HumbleKeysLibrary will create json files for data retrieved from the Humble API in the ExtensionsData directory. If a Cache file exists, the API will not be queried. This applies to Purchases, Memberships (Humble Monthly) and Orders.
 
 ## Details
 ### Tags
