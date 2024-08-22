@@ -124,7 +124,7 @@ jobs:
       - name: Download artifact to be added to release
         uses: actions/download-artifact@v4.1.8
         with: 
-          name: 'HumbleKeysLibrary_${{env.artifact-version}}.pext.zip'
+          name: 'HumbleKeysLibrary_${{env.artifact-version}}.pext'
           path: 'artifacts'
       
       - name: Create Draft Release
@@ -132,5 +132,5 @@ jobs:
         with: 
           name: ${{env.artifact-version}}
           body_path: changelog.md
-          files: 'artifacts/HumbleKeysLibrary_${{env.artifact-version}}.pext.zip'
+          files: 'artifacts/HumbleKeysLibrary_${{env.artifact-version}}.pext'
           draft: true
