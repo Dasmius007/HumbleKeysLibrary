@@ -169,8 +169,14 @@ namespace HumbleKeys.Services
         void AddChoiceMonthlyGames(Order order)
         {
             var cachePath = $"membership/{order.product.choice_url}";
-            var choiceUrl = $"https://www.humblebundle.com/{cachePath}";
+            // if the monthly choice_url can be parsed, store the cache file in a ISO YYYY-MM file instead
+            if (DateTime.TryParse(order.product.choice_url, out var choiceDate))
+            {
+                cachePath = $"membership/{choiceDate:yyyy-MM}";
+            }
+            var choiceUrl = $"https://www.humblebundle.com/membership/{order.product.choice_url}";
             var strChoiceMonth = string.Empty;
+            
             var orderCacheFilename = $"{localCachePath}/{cachePath}.json";
             if (preferCache)
             {
