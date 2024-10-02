@@ -20,6 +20,8 @@ namespace HumbleKeys
         public bool CacheEnabled { get; set; } = false;
         public string CurrentTagMethodology { get; set; } = "none";
 
+        public string CurrentUnredeemableMethodology { get; set; } = "tag";
+        
         [DontSerialize]
         public List<string> keyTypeWhitelist = new List<string>() {
             "gog",
