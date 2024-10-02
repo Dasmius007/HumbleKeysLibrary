@@ -3,6 +3,7 @@ using Playnite.SDK;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Playnite.SDK.Data;
@@ -141,11 +142,14 @@ namespace HumbleKeys.Services
                 var orderUri = string.Format(orderUrlMask, key);
                 var cacheFileName = $"{localCachePath}/order/{key}.json";
                 Order order = null;
+                bool cacheHit;
                 if (preferCache)
                 {
                     order = GetCacheContent<Order>(cacheFileName);
                 }
+
                 if (order == null) {
+                    cacheHit = false;
                     webView.NavigateAndWait(orderUri);
                     var strContent = webView.GetPageText();
                     if (preferCache)
@@ -154,7 +158,11 @@ namespace HumbleKeys.Services
                     }
                     order = Serialization.FromJson<Order>(strContent);
                 }
-                logger.Trace($"Request:{orderUri} Content:{Serialization.ToJson(order, true)}");
+                else
+                {
+                    cacheHit = true;
+                }
+                logger.Trace($"Request:{orderUri} {(cacheHit?"Cached ":"")}Content:{Serialization.ToJson(order, true)}");
 
                 if (string.Equals(order.product.category, subscriptionCategory, StringComparison.Ordinal) && !string.IsNullOrEmpty(order.product.choice_url) && includeChoiceMonths)
                 {
@@ -168,20 +176,35 @@ namespace HumbleKeys.Services
 
         void AddChoiceMonthlyGames(Order order)
         {
-            var cachePath = $"membership/{order.product.choice_url}";
+            string versionCachePath;
+            if (order.product.is_subs_v2_product)
+            {
+                versionCachePath = "v2";
+            } else if (order.product.is_subs_v3_product)
+            {
+                versionCachePath = "v3";
+            }
+            else
+            {
+                versionCachePath = "unknown";
+            }
+
+            var cachePath = $"membership/{versionCachePath}/{order.product.choice_url}";
             // if the monthly choice_url can be parsed, store the cache file in a ISO YYYY-MM file instead
             if (DateTime.TryParse(order.product.choice_url, out var choiceDate))
             {
-                cachePath = $"membership/{choiceDate:yyyy-MM}";
+                cachePath = $"membership/{versionCachePath}/{choiceDate:yyyy-MM}";
             }
             var choiceUrl = $"https://www.humblebundle.com/membership/{order.product.choice_url}";
             var strChoiceMonth = string.Empty;
             
             var orderCacheFilename = $"{localCachePath}/{cachePath}.json";
+            var cacheHit = false;
             if (preferCache)
             {
                 // Request may be cached in local filesystem to prevent spamming Humble
                 strChoiceMonth = GetCacheContent(orderCacheFilename);
+                cacheHit = !string.IsNullOrEmpty(strChoiceMonth);
             }
 
             if (string.IsNullOrEmpty(strChoiceMonth))
@@ -210,12 +233,12 @@ namespace HumbleKeys.Services
             if (order.product.is_subs_v2_product)
             {
                 choiceMonth = Serialization.FromJson<ChoiceMonthV2>(strChoiceMonth);
-                logger.Trace($"Request:{choiceUrl} Content:{Serialization.ToJson(choiceMonth, true)}");
+                logger.Trace($"Request:{choiceUrl} {(cacheHit?"From Cache ":"")}Content:{Serialization.ToJson(choiceMonth, true)}");
             }
             else if (order.product.is_subs_v3_product)
             {
                 choiceMonth = Serialization.FromJson<ChoiceMonthV3>(strChoiceMonth);
-                logger.Trace($"Request:{choiceUrl} Content:{Serialization.ToJson(choiceMonth, true)}");
+                logger.Trace($"Request:{choiceUrl} {(cacheHit?"From Cache ":"")}Content:{Serialization.ToJson(choiceMonth, true)}");
             }
             else
             {
@@ -223,24 +246,43 @@ namespace HumbleKeys.Services
             }
 
             if (choiceMonth == null) return;
-                
-            foreach (var contentChoice in choiceMonth.ContentChoices)
+            
+            // Add contentChoice to all_tpks if it doesn't already exist (all_tpks gets populated by the order if it is already redeemed)
+            // Only add to the order if the month contains redeemable games, may already have exhausted the selection count
+            var orderMachineNames = order.tpkd_dict.all_tpks.Select(tpk => tpk.machine_name).ToList();
+
+            var contentChoicesNotInOrder = choiceMonth.ContentChoices.Keys.ToList().Where(contentChoiceKey => !choiceMonth.ChoicesMade.Contains(contentChoiceKey));
+            foreach (var contentChoiceKey in contentChoicesNotInOrder)
             {
+                // get tkpds either directly or via nested_choice_tpkds
+                Order.TpkdDict.Tpk[] orderEntries = null; 
+                var contentChoice = choiceMonth.ContentChoices[contentChoiceKey];
                 if (contentChoice.tpkds != null)
                 {
-                    order.tpkd_dict.all_tpks.AddRange(contentChoice.tpkds);
+                    orderEntries = contentChoice.tpkds;
                 }
                 else if (contentChoice.nested_choice_tpkds != null)
                 {
+                    var nestedOrderEntries = new List<Order.TpkdDict.Tpk>();
                     foreach (var nestedChoiceTpkd in contentChoice.nested_choice_tpkds)
                     {
-                        order.tpkd_dict.all_tpks.AddRange(nestedChoiceTpkd.Value);
+                        nestedOrderEntries.AddRange(nestedChoiceTpkd.Value);
                     }
+                    orderEntries = nestedOrderEntries.ToArray();
                 }
                 else
                 {
                     logger.Error($"Unable to retrieve tpkds for Choice Month Title:{choiceMonth.Title}");
                 }
+
+                if (orderEntries == null) continue;
+                
+                foreach (var contentChoiceTpkd in orderEntries)
+                {
+                    contentChoiceTpkd.is_virtual = true;
+                }
+
+                order.tpkd_dict.all_tpks.AddRange(orderEntries);
             }
         }
 

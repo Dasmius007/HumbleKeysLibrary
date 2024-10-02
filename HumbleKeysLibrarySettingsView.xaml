@@ -51,9 +51,36 @@
 				          ToolTip="When None is not selected, Humble Keys Library will add a new Tag per Bundle Name"
 				          Grid.Column="0"/>
 					<ListBox Margin="10 0 0 0 " Name="TagMethodology" SelectedValuePath="Tag" SelectedValue="{Binding CurrentTagMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single">
+						
 						<ListBoxItem Tag="none" ToolTip="Do not create Tags based on Bundle Name">None</ListBoxItem>
-						<ListBoxItem Tag="monthly" ToolTip="Create only Tags for Humble Choice Monthly bundles" IsEnabled="{Binding IsChecked,ElementName=ImportChoiceKeys}">Monthly Only</ListBoxItem>
+						<ListBoxItem Tag="monthly" ToolTip="Create only Tags for Humble Choice Monthly bundles" IsEnabled="{Binding IsChecked,ElementName=ImportChoiceKeys}">
+							<ListBoxItem.Style>
+							<Style TargetType="{x:Type ListBoxItem}">
+								<Setter Property="Foreground" Value="White" />
+								<Style.Triggers>
+								</Style.Triggers>
+							</Style>
+						</ListBoxItem.Style>
+							Monthly Only
+						</ListBoxItem>
 						<ListBoxItem Tag="all" ToolTip="Create Tags for all Bundles">All</ListBoxItem>
+					</ListBox>
+				</Grid>
+			</StackPanel>
+			<StackPanel Margin="0 10 0 10" Width="Auto" Orientation="Horizontal">
+				<Grid Width="Auto">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<TextBlock
+						Name="UnredeemableKeyHandling"
+						Text="Unredeemable key handling"
+						ToolTip="If Tag is selected, a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeeemable'"
+						Grid.Column="0"/>
+					<ListBox Margin="10 0 0 0 " Name="UnredeemableKeyValues" SelectedValuePath="Tag" SelectedValue="{Binding CurrentUnredeemableMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single" IsEnabled="{Binding IsChecked,ElementName=ImportChoiceKeys}">
+						<ListBoxItem Tag="tag" ToolTip="Create only Tags for Humble Choice Monthly bundles">Tag</ListBoxItem>
+						<ListBoxItem Tag="delete" ToolTip="Do not create Tags based on Bundle Name">Delete</ListBoxItem>
 					</ListBox>
 				</Grid>
 			</StackPanel>
