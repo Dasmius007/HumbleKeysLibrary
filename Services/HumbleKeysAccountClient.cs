@@ -30,7 +30,7 @@ namespace HumbleKeys.Services
 
             preferCache = clientSettings.CacheEnabled;
             // initialise folder structure for local cache
-            var cachePaths = new[] { "order", "membership" };
+            var cachePaths = new[] { "order", "membership/v2","membership/v3","membership" };
             if (preferCache)
             {
                 foreach (var cachePath in cachePaths)
