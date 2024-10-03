@@ -56,9 +56,6 @@ jobs:
           version-source: variable
           version: ${{steps.version_branch.outputs.branch_version}}
           
-      - name: Generate version from tag
-        if: ${{ github.ref_type == 'tag' }}
-
 #      - name: Debug if condition
 #        run: |
 #          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
