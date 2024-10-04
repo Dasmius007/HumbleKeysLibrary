@@ -78,7 +78,7 @@
 						Text="Unredeemable key handling"
 						ToolTip="If Tag is selected, a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeeemable'"
 						Grid.Column="0"/>
-					<ListBox Margin="10 0 0 0 " Name="UnredeemableKeyValues" SelectedValuePath="Tag" SelectedValue="{Binding CurrentUnredeemableMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single" IsEnabled="{Binding IsChecked,ElementName=ImportChoiceKeys}">
+					<ListBox Margin="10 0 0 0 " Name="UnredeemableKeyValues" SelectedValuePath="Tag" SelectedValue="{Binding CurrentUnredeemableMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single">
 						<ListBoxItem Tag="tag" ToolTip="Create only Tags for Humble Choice Monthly bundles">Tag</ListBoxItem>
 						<ListBoxItem Tag="delete" ToolTip="Do not create Tags based on Bundle Name">Delete</ListBoxItem>
 					</ListBox>

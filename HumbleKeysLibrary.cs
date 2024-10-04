@@ -180,7 +180,7 @@ namespace HumbleKeys
 
                                 game.TagIds.Add(unredeemableTag.Id);
                                 PlayniteApi.Notifications.Add(
-                                    new NotificationMessage("HumbleKeysLibraryUpdate",
+                                    new NotificationMessage("HumbleKeysLibraryUpdate_"+game.Id,
                                         $"{game.Name} is no longer redeemable", NotificationType.Info,
                                         () =>
                                         {
@@ -233,7 +233,7 @@ namespace HumbleKeys
                                     {
                                         PlayniteApi.Database.Games.Update(alreadyImported);
                                         PlayniteApi.Notifications.Add(
-                                            new NotificationMessage("HumbleKeysLibraryUpdate",
+                                            new NotificationMessage("HumbleKeysLibraryUpdate_"+alreadyImported.Id,
                                                 $"{alreadyImported.Name} is no longer redeemable", NotificationType.Info,
                                                 () =>
                                                 {
@@ -258,8 +258,8 @@ namespace HumbleKeys
                             {
                                 PlayniteApi.Database.Games.Update(alreadyImported);
                                 PlayniteApi.Notifications.Add(
-                                    new NotificationMessage("HumbleKeysLibraryUpdate",
-                                        $"Tags Updated for {alreadyImported.Name}", NotificationType.Info,
+                                    new NotificationMessage("HumbleKeysLibraryUpdate_"+alreadyImported.Id,
+                                        $"Tags Updated for {alreadyImported.Name}: "+GetOrderRedemptionTagState(tpkd), NotificationType.Info,
                                         () =>
                                         {
                                             if (PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen) return;
@@ -343,7 +343,7 @@ namespace HumbleKeys
             };
             
             // add tag reflecting redemption status
-            gameInfo.Tags.Add(new MetadataNameProperty(GetRedeemedTag(tpkd)));
+            gameInfo.Tags.Add(new MetadataNameProperty(GetOrderRedemptionTagState(tpkd)));
             
             if (!string.IsNullOrWhiteSpace(tpkd?.gamekey))
             {
@@ -366,6 +366,7 @@ namespace HumbleKeys
             return game;
         }
 
+        // If a game is expired, add tag 'Key: Unredeemable'
         // If a game had been redeemed since last added to Playnite, remove the tag 'Key: Unredeemed' and add the tag 'Key: Redeemed'
         // returns whether tags were updated or not 
         bool UpdateRedemptionStatus(Game existingGame, Order.TpkdDict.Tpk tpkd, Tag groupTag = null)
@@ -375,44 +376,28 @@ namespace HumbleKeys
             if (!Settings.keyTypeWhitelist.Contains(tpkd.key_type)) { return false; }
 
             // process tags on existingGame only if there was a change in tag status
-            
-            var existingRedemptionTagIds = existingGame.Tags?.Where(t => PAST_TAGS.Contains(t.Name)).Select(tag => tag.Id);
+
+            var existingRedemptionTagIds = existingGame.Tags?.Where(t => PAST_TAGS.Contains(t.Name)).ToList().Select(tag => tag.Id)??Enumerable.Empty<Guid>();
             
             // This creates a new Tag in the Tag Database if it doesn't already exist for 'Tag: Redeemed'
-            var redeemedTag = PlayniteApi.Database.Tags.Add(GetRedeemedTag(tpkd));
-            if (existingRedemptionTagIds == null) return false;
             var tagIds = existingRedemptionTagIds.ToList();
+            var currentTagState = PlayniteApi.Database.Tags.Add(GetOrderRedemptionTagState(tpkd));
 
             if (groupTag != null)
             {
-                if (existingGame.Tags.All(tag => tag.Id != groupTag.Id))
+                if (existingGame.Tags != null && existingGame.Tags.All(tag => tag.Id != groupTag.Id))
                 {
                     existingGame.TagIds.Add(groupTag.Id);
                     recordChanged = true;
                 }
             }
-            
-            // already tagged as unredeemable in prior check, don't update with redeemed/unredeemed tag
-            var unredeemableTag = PlayniteApi.Database.Tags.Add(UNREDEEMABLE_STR);
-            
-            // Game is Expired and has no key, it can no longer be redeemed
-            if (tpkd.is_expired && !IsKeyPresent(tpkd))
-            {
-                var removedCount = existingGame.TagIds.RemoveAll(tagId => tagIds.Contains(tagId));
-                existingGame.TagIds.Add(unredeemableTag.Id);
-                return removedCount > 0;
-            }
-            
-            if (tagIds.Contains(redeemedTag.Id)) return recordChanged;
+            // existingGame already tagged with correct tag state
+            if (tagIds.Contains(currentTagState.Id)) return recordChanged;
 
-            
-            if (tagIds.Contains(unredeemableTag.Id)) return recordChanged;
-            
+            // remove all tags related to key state
             existingGame.TagIds.RemoveAll(tagId => tagIds.Contains(tagId));
-           
 
-            existingGame.TagIds.Add(
-                PlayniteApi.Database.Tags.Add(IsKeyPresent(tpkd) ? REDEEMED_STR : UNREDEEMED_STR).Id);
+            existingGame.TagIds.Add(currentTagState.Id);
 
             return true;
         }
@@ -423,7 +408,12 @@ namespace HumbleKeys
         private static Link MakeSteamLink(string gameKey) => new Link("Steam", string.Format(steamGameUrlMask, gameKey));
         private static bool IsKeyNull(Order.TpkdDict.Tpk t) => t?.redeemed_key_val == null;
         private static bool IsKeyPresent(Order.TpkdDict.Tpk t) => !IsKeyNull(t);
-        private static string GetRedeemedTag(Order.TpkdDict.Tpk t) => IsKeyPresent(t) ? REDEEMED_STR : UNREDEEMED_STR;
+        private static string GetOrderRedemptionTagState(Order.TpkdDict.Tpk t)
+        {
+            if (t.is_expired) return UNREDEEMABLE_STR;
+            return IsKeyPresent(t) ? REDEEMED_STR : UNREDEEMED_STR;
+        }
+
         #endregion
     }
 }
