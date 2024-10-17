@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace HumbleKeys.Models
@@ -83,5 +84,6 @@ namespace HumbleKeys.Models
         // v3 always 0?
         // v2 total_choices - number of games redeemed
         public int choices_remaining;
+        public DateTime created;
     }
 }
