@@ -1,4 +1,4 @@
-[![Build PEXT](https://github.com/ecenshu/HumbleKeysLibrary/actions/workflows/msbuild.yml/badge.svg?event=push)](https://github.com/ecenshu/HumbleKeysLibrary/actions/workflows/msbuild.yml)
+[![Build PEXT](https://github.com/Dasmius007/HumbleKeysLibrary/actions/workflows/msbuild.yml/badge.svg?event=push)](https://github.com/Dasmius007/HumbleKeysLibrary/actions/workflows/msbuild.yml)
 
 # HumbleKeysLibrary
 Humble Keys Library is a library plug-in extension for [Playnite](https://playnite.link/) which queries Humble Bundle for third-party keys.

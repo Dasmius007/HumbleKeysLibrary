@@ -11,7 +11,7 @@
 * Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
 * Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
 * Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
-* Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either exipred and cannot be redeemed or part of a Bundle where all choices have been made)
+* Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either expired and cannot be redeemed or part of a Bundle where all choices have been made)
 * Add new option to allow for either tagging a Game as 'Key: Unredeemable' or not add to the library
 
 # v0.3.1
