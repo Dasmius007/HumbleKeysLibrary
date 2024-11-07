@@ -10,6 +10,9 @@ namespace HumbleKeys.Models
             public string category;
             public string machine_name;
             public string human_name;
+            public string choice_url;
+            public bool is_subs_v2_product;
+            public bool is_subs_v3_product;
         }
 
         public class SubProduct
@@ -59,7 +62,10 @@ namespace HumbleKeys.Models
                 public string human_name;
                 public string @class;
                 public string library_family_name;
+                public string steam_app_id;
+                public bool is_expired;
                 public Newtonsoft.Json.Linq.JToken redeemed_key_val;
+                public bool is_virtual = false;
             }
 
             public List<Tpk> all_tpks;
@@ -71,5 +77,11 @@ namespace HumbleKeys.Models
         public List<SubProduct> subproducts;
         public TpkdDict tpkd_dict;
         public List<string> path_ids;
+        // v3 seems to mean how many of the bundle has been selected
+        // v2 seems to mean number of games available to be redeemed
+        public int total_choices;
+        // v3 always 0?
+        // v2 total_choices - number of games redeemed
+        public int choices_remaining;
     }
 }
