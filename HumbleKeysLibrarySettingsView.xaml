@@ -76,7 +76,7 @@
 					<TextBlock
 						Name="UnredeemableKeyHandling"
 						Text="Unredeemable key handling"
-						ToolTip="If Tag is selected, a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeeemable', if Delete is selected, the game will not deleted from the library if it is not able to be redeemed"
+						ToolTip="If Tag is selected, a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeeemable', if Delete is selected, the game will deleted from the library if it is not able to be redeemed"
 						Grid.Column="0"/>
 					<ListBox Margin="10 0 0 0 " Name="UnredeemableKeyValues" SelectedValuePath="Tag" SelectedValue="{Binding CurrentUnredeemableMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single">
 						<ListBoxItem Tag="tag" ToolTip="Create only Tags for games that cannnot be redeemed">Tag</ListBoxItem>
