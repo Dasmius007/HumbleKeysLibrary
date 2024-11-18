@@ -76,6 +76,8 @@ jobs:
           
       - name: Debug if condition for version_artifact_setenv
         run: |
+          echo "steps.version_tag_setenv.outputs.version: ${{steps.version_tag_setenv.outputs.version}}"
+          echo "Comparison evaluation: $${{(steps.version_tag_setenv.outputs.version == 0)}}"
           echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
           echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
@@ -89,6 +91,8 @@ jobs:
         
       - name: Debug if condition for version_tag_generated_setenv
         run: |
+          echo "steps.version_artifact_setenv.outputs.version: ${{steps.version_artifact_setenv.outputs.version}}"
+          echo "Comparison evaluation: $${{(steps.version_artifact_setenv.outputs.version == 0)}}"
           echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
           echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
@@ -100,7 +104,12 @@ jobs:
         id: version_tag_generated_setenv
         run:
           echo "version=${{ steps.version_tag_generated.outputs.current_version}}" >> $GITHUB_OUTPUT
-      
+
+      - name: Debug if condition for version_artifact_tag_setenv
+        run: |
+          echo "steps.version_tag_generated_setenv.outputs.version: ${{steps.version_tag_generated_setenv.outputs.version}}"
+          echo "Comparison evaluation: $${{(steps.version_tag_generated_setenv.outputs.version == 0)}}"
+     
       - name: Set env.ARTIFACT_VERSION from tag
         if: ${{ steps.version_tag_generated_setenv.outputs.version == 0 && github.ref_type == 'tag' }}
         id: version_artifact_tag_setenv
