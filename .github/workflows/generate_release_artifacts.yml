@@ -102,7 +102,7 @@ jobs:
           echo "version=${{ steps.version_tag_generated.outputs.current_version}}" >> $GITHUB_OUTPUT
       
       - name: Set env.ARTIFACT_VERSION from tag
-        if: ${{ version_tag_generated_setenv.outputs.version == 0 && github.ref_type == 'tag' }}
+        if: ${{ steps.version_tag_generated_setenv.outputs.version == 0 && github.ref_type == 'tag' }}
         id: version_artifact_tag_setenv
         run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
         
