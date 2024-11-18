@@ -35,13 +35,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Get next version from tags
-        id: version_tag
+      - name: Generate version numbers from existing tags
+        id: version_tag_generated
         uses: reecetech/version-increment@2023.10.1
         with:
           scheme: semver
           increment: patch
           
+      - name: Parse version from Tag
+        id: version_tag
+        if: ${{ (github.ref_type == 'tag') }}
+        uses: release-kit/semver@v2
+
+      - name: Debug if condition for version_tag_setenv
+        run: |
+          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
+          echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
+          echo "Tag name from steps.version_tag.outputs.patch: ${{steps.version_tag.outputs.patch}}"
+          echo "Comparison evaluation: $${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major >= steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}"
+
+      - name: Set version from Tag
+        id: version_tag_setenv
+        if: $${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major >= steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}
+        run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
+        
       - name: Split branch name
         if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
         env:
@@ -50,7 +67,7 @@ jobs:
         run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
         
       - name: Generate version from branch
-        if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+        if: ${{ steps.version_tag_setenv.output.version == 0 && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
         id: version_branch_generate
         uses: HardNorth/github-version-generate@v1.4.0
         with:
@@ -59,40 +76,41 @@ jobs:
           
       - name: Debug if condition for version_artifact_setenv
         run: |
-          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
+          echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
-          echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
+          echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
+          echo "Comparison evaluation: ${{ (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
       
       - name: Set env.ARTIFACT_VERSION calculated from releases branch
-        if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
+        if: ${{ (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
         id: version_artifact_setenv
         run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
         
-      - name: Debug if condition for version_tag_setenv
+      - name: Debug if condition for version_tag_generated_setenv
         run: |
-          echo "Tag name from steps.version_tag.outputs.major-version: ${{steps.version_tag.outputs.major-version}}"
+          echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
-          echo "Tag name from steps.version_tag.outputs.minor-version: ${{steps.version_tag.outputs.minor-version}}"
+          echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
+          echo "Comparison evaluation: ${{ (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
 
       - name: Set env.TAG_VERSION
-        if: ${{ (steps.version_tag.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
-        id: version_tag_setenv
+        if: ${{ (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
+        id: version_tag_generated_setenv
         run:
-          echo "version=${{ steps.version_tag.outputs.current_version}}" >> $GITHUB_OUTPUT
+          echo "version=${{ steps.version_tag_generated.outputs.current_version}}" >> $GITHUB_OUTPUT
       
       - name: Set env.ARTIFACT_VERSION from tag
         if: ${{github.ref_type == 'tag'}}
         id: version_artifact_tag_setenv
         run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
+        
 #      - name: GitHub Tag Name example
 #        run: |
 #          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
 #          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
-#          echo "Version parsed from tags: steps.version_tag.outputs.version = ${{steps.version_tag.outputs.version}}
+#          echo "Version parsed from tags: steps.version_tag_generated.outputs.version = ${{steps.version_tag_generated.outputs.version}}
 #          echo "Semver generated env.CURRENT_VERSION: ${{env.CURRENT_VERSION}}
 #          echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
 #          echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
@@ -112,10 +130,10 @@ jobs:
       contents: write
     steps:
       - name: Set version from artifact
-        if: ${{env.artifact-version != ''}}
+        if: ${{env.artifact-version != 0}}
         run: echo "version=${{env.artifact-version}}" >> $GITHUB_ENV
       - name: Set version from tag
-        if: ${{env.tag-version != ''}}
+        if: ${{env.tag-version != 0}}
         run: echo "version=${{env.tag-version}}" >> $GITHUB_ENV
         
       - uses: actions/checkout@v4
