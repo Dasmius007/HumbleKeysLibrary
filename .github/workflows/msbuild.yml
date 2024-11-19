@@ -48,6 +48,8 @@ jobs:
           "Links.Url": "${{github.server_url}}/${{github.repository}}",
           "Author": "${{github.repository_owner}}"
           }
+        method: update
+        message: "Metadata updated from repository"
         commitChange: true
 
     - name: Add msbuild to PATH
