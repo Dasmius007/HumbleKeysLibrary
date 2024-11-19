@@ -99,7 +99,7 @@ jobs:
           echo "Comparison evaluation: ${{ (!steps.version_artifact_setenv.outputs.version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}"
 
       - name: Set env.TAG_VERSION
-        if: ${{ (!steps.version_artifact_setenv.outputs.version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}
+        if: ${{ (!steps.version_tag_setenv.outputs.version) && (!steps.version_artifact_setenv.outputs.version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}
         id: version_tag_generated_setenv
         run:
           echo "version=${{ steps.version_tag_generated.outputs.current_version}}" >> $GITHUB_OUTPUT
