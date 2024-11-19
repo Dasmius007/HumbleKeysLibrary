@@ -10,7 +10,7 @@ on:
     branches: [ "master" ]
     # build handled by release packaging workflow
     tags:
-      - build-[0-9]+.[0-9]+.[0-9]+*
+      - build-[v]*[0-9]+.[0-9]+.[0-9]+*
   pull_request:
     branches: [ "master" ]
     # build handled by release packaging workflow
