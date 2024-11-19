@@ -50,7 +50,7 @@ jobs:
 
       - name: Set version from Tag
         id: version_tag_setenv
-        if: $${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}
+        if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}
         run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
         
       - name: Split branch name
@@ -82,7 +82,7 @@ jobs:
         if: ${{ steps.version_tag_generated_setenv.outputs.version && github.ref_type == 'tag' }}
         id: version_artifact_tag_setenv
         run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
-        
+          
 #      - name: GitHub Tag Name example
 #        run: |
 #          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
@@ -132,7 +132,7 @@ jobs:
         run: echo "{{steps.set-assembly-version.outputs.version}}"
 
       - name: Build PEXT
-        uses: ./.github/workflows/msbuild
+        uses: ./.github/actions/msbuild
           
       - name: Rename PEXT for upload
         run: mv bin/Release/pext/HumbleKeysLibrary.pext bin/Release/pext/HumbleKeysLibrary_${{env.version}}.pext
