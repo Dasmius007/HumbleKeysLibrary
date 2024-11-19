@@ -1,4 +1,7 @@
 ﻿## What's Changed
+# v0.3.5
+* Automatically create releases with correct metadata to be added to Playnite API Database
+
 # v0.3.4
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
 * Corrected tooltips for Unredeemable key handling
