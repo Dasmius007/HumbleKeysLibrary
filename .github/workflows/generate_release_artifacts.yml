@@ -147,7 +147,7 @@ jobs:
         run: echo "version=${{env.generated-version}}" >> $GITHUB_ENV
 
       - name: Debug version number
-        run: echo "version = ${{env.version}}"
+        run: echo "version = {{env.version}}"
       
       - uses: actions/checkout@v4
 
@@ -167,7 +167,7 @@ jobs:
       - name: Create Artifacts
         uses: actions/upload-artifact@v4.3.6
         with:
-          name: "HumbleKeysLibrary_"${{env.version}}".pext"
+          name: "HumbleKeysLibrary_{{env.version}}.pext"
           path: bin/Release/pext/HumbleKeysLibrary.pext
           if-no-files-found: 'error'
           overwrite: 'true'
@@ -176,7 +176,7 @@ jobs:
         id: download-artifact
         uses: actions/download-artifact@v4.1.8
         with: 
-          name: "HumbleKeysLibrary_"${{env.version}}".pext"
+          name: "HumbleKeysLibrary_{{env.version}}.pext"
           path: 'artifacts'
       
       - name: Create Draft Release
