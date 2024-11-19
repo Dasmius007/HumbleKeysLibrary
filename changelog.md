@@ -1,6 +1,5 @@
 ﻿## What's Changed
 # v0.3.5
-* Update extension.yaml with metadata from repository
 * Automatically create releases with correct metadata to be added to Playnite API Database
 
 # v0.3.4

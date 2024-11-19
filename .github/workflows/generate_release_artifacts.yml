@@ -159,28 +159,3 @@ jobs:
           body_path: changelog.md
           files: 'artifacts/*'
           draft: true
-      
-      - name: Update Manifests
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          changes: |
-            {
-              "extension.yaml": {
-                "Links.Url": "${{github.server_url}}/${{github.repository}}",
-                "Author": "${{github.repository_owner}}"
-              },
-              "Manifests/HumbleKeysLibrary_AddonDB.yaml": {
-                "IconUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/icon.jpg",
-                "InstallerManifestUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml",
-                "Author": "${{github.repository_owner}}",
-                "SourceUrl": "${{github.server_url}}/${{github.repository}}"
-              },
-              "Manifests/HumbleKeysLibrary_Installer.yaml": {
-                "Version": "${{env.version}}",
-                "ReleaseDate": "$(date +'%Y-%m-%d')",
-                "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-              }
-            }
-          method: update
-          message: "Metadata updated from repository"
-          commitChange: true
