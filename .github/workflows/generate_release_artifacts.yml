@@ -147,7 +147,7 @@ jobs:
         run: echo "version=${{env.generated-version}}" >> $GITHUB_ENV
 
       - name: Debug version number
-        run: echo "version = {{env.version}}"
+        run: echo "version is ${{env.version}}"
       
       - uses: actions/checkout@v4
 
@@ -164,10 +164,13 @@ jobs:
         # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
         run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}} /verbosity:diag
 
+      - name: Set PEXT filename for artifact
+        run: |
+          echo "artifact_filename=HumbleKeysLibrary_${{env.version}}.pext" >> $GITHUB_ENV
       - name: Create Artifacts
         uses: actions/upload-artifact@v4.3.6
         with:
-          name: "HumbleKeysLibrary_{{env.version}}.pext"
+          name: ${{env.artifact_filename}}
           path: bin/Release/pext/HumbleKeysLibrary.pext
           if-no-files-found: 'error'
           overwrite: 'true'
@@ -175,8 +178,8 @@ jobs:
       - name: Download artifact to be added to release
         id: download-artifact
         uses: actions/download-artifact@v4.1.8
-        with: 
-          name: "HumbleKeysLibrary_{{env.version}}.pext"
+        with:
+          name: ${{env.artifact_filename}}
           path: 'artifacts'
       
       - name: Create Draft Release
