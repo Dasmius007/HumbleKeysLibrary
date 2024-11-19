@@ -50,7 +50,7 @@ jobs:
 
       - name: Set version from Tag
         id: version_tag_setenv
-        if: $${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}
+        if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}
         run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
         
       - name: Split branch name
@@ -82,7 +82,7 @@ jobs:
         if: ${{ steps.version_tag_generated_setenv.outputs.version && github.ref_type == 'tag' }}
         id: version_artifact_tag_setenv
         run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
-        
+          
 #      - name: GitHub Tag Name example
 #        run: |
 #          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
@@ -131,8 +131,18 @@ jobs:
       - name: Display the version used
         run: echo "{{steps.set-assembly-version.outputs.version}}"
 
-      - name: Build PEXT
-        uses: ./.github/workflows/msbuild
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+      - name: Build app for release
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        # Add additional options to the MSBuild command line here (like platform or verbosity level).
+        # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+        run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}} /verbosity:diag
           
       - name: Rename PEXT for upload
         run: mv bin/Release/pext/HumbleKeysLibrary.pext bin/Release/pext/HumbleKeysLibrary_${{env.version}}.pext
@@ -159,3 +169,28 @@ jobs:
           body_path: changelog.md
           files: 'artifacts/*'
           draft: true
+      
+      - name: Update Manifests
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          changes: |
+            {
+              "extension.yaml": {
+                "Links.Url": "${{github.server_url}}/${{github.repository}}",
+                "Author": "${{github.repository_owner}}"
+              },
+              "Manifests/HumbleKeysLibrary_AddonDB.yaml": {
+                "IconUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/icon.jpg",
+                "InstallerManifestUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml",
+                "Author": "${{github.repository_owner}}",
+                "SourceUrl": "${{github.server_url}}/${{github.repository}}"
+              },
+              "Manifests/HumbleKeysLibrary_Installer.yaml": {
+                "Version": "${{env.version}}",
+                "ReleaseDate": "$(date +'%Y-%m-%d')",
+                "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
+              }
+            }
+          method: update
+          message: "Metadata updated from repository"
+          commitChange: true
