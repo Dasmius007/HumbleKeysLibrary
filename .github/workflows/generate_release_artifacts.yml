@@ -140,7 +140,7 @@ jobs:
         if: ${{env.tag-version}}
         run: echo "version=${{env.tag-version}}" >> $GITHUB_ENV
       - name: Set version from artifact
-        if: ${{env.artifact-version)}}
+        if: ${{env.artifact-version}}
         run: echo "version=${{env.artifact-version}}" >> $GITHUB_ENV
       - name: Set version generated from tag
         if: ${{env.generated-version}}
