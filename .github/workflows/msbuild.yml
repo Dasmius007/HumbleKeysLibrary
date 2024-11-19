@@ -45,8 +45,8 @@ jobs:
         valueFile: 'extension.yaml'
         changes: |
           {
-          "Links.Url": ${{github.server_url}}/${{github.repository}},
-          "Author: ${{github.repository_owner}}
+          "Links.Url": "${{github.server_url}}/${{github.repository}}",
+          "Author": "${{github.repository_owner}}"
           }
         commitChange: true
 
