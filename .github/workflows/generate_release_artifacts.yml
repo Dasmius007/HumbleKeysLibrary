@@ -31,6 +31,7 @@ jobs:
     outputs:
       artifact-version: ${{ steps.version_artifact_setenv.outputs.version }}
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
+      generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,7 +82,7 @@ jobs:
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
           echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
+          echo "Comparison evaluation: ${{ !steps.version_tag_setenv.outputs.version && (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
       
       - name: Set env.ARTIFACT_VERSION calculated from releases branch
         if: ${{ !steps.version_tag_setenv.outputs.version && (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
@@ -95,7 +96,7 @@ jobs:
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
           echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}"
+          echo "Comparison evaluation: ${{ !steps.version_artifact_setenv.outputs.version && (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
 
       - name: Set env.TAG_VERSION
         if: ${{ !steps.version_artifact_setenv.outputs.version && (steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) }}
@@ -132,16 +133,20 @@ jobs:
     env:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
+      generated-version: $${{ needs.versioning.outputs.generated-version }}
     permissions: 
       contents: write
     steps:
-      - name: Set version from artifact
-        if: ${{env.artifact-version}}
-        run: echo "version=${{env.artifact-version}}" >> $GITHUB_ENV
       - name: Set version from tag
         if: ${{env.tag-version}}
         run: echo "version=${{env.tag-version}}" >> $GITHUB_ENV
-        
+      - name: Set version from artifact
+        if: ${{env.artifact-version}}
+        run: echo "version=${{env.artifact-version}}" >> $GITHUB_ENV
+      - name: Set version generated from tag
+        if: ${{env.generated-version}}
+        run: echo "version=${{env.generated-version}}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
