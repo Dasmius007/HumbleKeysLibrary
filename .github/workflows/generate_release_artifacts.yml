@@ -168,7 +168,7 @@ jobs:
       - name: Set PEXT filename for artifact
         id: pext_filename
         run: |
-          echo "artifact_filename=HumbleKeysLibrary_${{version}}.pext" >> $GITHUB_OUTPUT
+          echo "artifact_filename=HumbleKeysLibrary_${{env.version}}.pext" >> $GITHUB_OUTPUT
       - name: Create Artifacts
         uses: actions/upload-artifact@v4.3.6
         with:
