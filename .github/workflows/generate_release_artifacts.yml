@@ -132,7 +132,7 @@ jobs:
     env:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
-      generated-version: $${{ needs.versioning.outputs.generated-version }}
+      generated-version: ${{ needs.versioning.outputs.generated-version }}
     permissions: 
       contents: write
     steps:
@@ -140,12 +140,15 @@ jobs:
         if: ${{env.tag-version}}
         run: echo "version=${{env.tag-version}}" >> $GITHUB_ENV
       - name: Set version from artifact
-        if: ${{ ((!env.tag-version) && env.artifact-version)}}
+        if: ${{env.artifact-version)}}
         run: echo "version=${{env.artifact-version}}" >> $GITHUB_ENV
       - name: Set version generated from tag
-        if: ${{ (!env.tag-version) && (!env.artifact-version) && env.generated-version}}
+        if: ${{env.generated-version}}
         run: echo "version=${{env.generated-version}}" >> $GITHUB_ENV
 
+      - name: Debug version number
+        run: echo ${{env.version}}
+        
       - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
