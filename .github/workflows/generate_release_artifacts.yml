@@ -138,17 +138,17 @@ jobs:
     steps:
       - name: Set version from tag
         if: ${{env.tag-version}}
-        run: echo "version=${{env.tag-version}}" >> $GITHUB_ENV
+        run: echo "version=${{env.tag-version}}" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
       - name: Set version from artifact
         if: ${{env.artifact-version}}
-        run: echo "version=${{env.artifact-version}}" >> $GITHUB_ENV
+        run: echo "version=${{env.artifact-version}}" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
       - name: Set version generated from tag
         if: ${{env.generated-version}}
-        run: echo "version=${{env.generated-version}}" >> $GITHUB_ENV
+        run: echo "version=${{env.generated-version}}" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Debug version number
         run: |
-          echo "version is $version"
+          echo "version is ${{env.version}}"
       
       - uses: actions/checkout@v4
 
