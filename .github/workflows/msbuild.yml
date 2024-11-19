@@ -46,7 +46,7 @@ jobs:
         changes: |
           {
           "Links.Url": "${{github.server_url}}/${{github.repository}}",
-          "Author: "${{github.repository_owner}}"
+          "Author": "${{github.repository_owner}}"
           }
         commitChange: true
 
