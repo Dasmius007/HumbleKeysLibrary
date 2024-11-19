@@ -147,8 +147,8 @@ jobs:
         run: echo "version=${{env.generated-version}}" >> $GITHUB_ENV
 
       - name: Debug version number
-        run: echo "${{env.version}}"
-        
+        run: echo "version = $version"
+      
       - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
