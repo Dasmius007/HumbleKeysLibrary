@@ -88,8 +88,8 @@
     <PackageReference Include="PlayniteSDK" Version="6.9.0" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".github\workflows\generate_release_artifacts.yml" />
-    <Content Include=".github\workflows\msbuild.yml" />
+    <Content Include=".github\workflows\generate_release_artifacts\action.yml" />
+    <Content Include=".github\workflows\msbuild\action.yml" />
     <Content Include="attributions.txt" />
     <Content Include="changelog.md" />
     <Content Include="LICENSE" />

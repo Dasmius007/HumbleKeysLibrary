@@ -9,10 +9,8 @@ on:
   push:
     branches: [ "master" ]
     # build handled by release packaging workflow
-    tags-ignore:
-      - v[0-9]+.[0-9]+.[0-9]+*
     tags:
-      - build-[0-9]+.[0-9]+.[0-9]+*
+      - build-[v]*[0-9]+.[0-9]+.[0-9]+*
   pull_request:
     branches: [ "master" ]
     # build handled by release packaging workflow
@@ -47,9 +45,11 @@ jobs:
         valueFile: 'extension.yaml'
         changes: |
           {
-          "Links.Url": ${{GITHUB_SERVER_URL}}/${{GITHUB_REPOSITORY}},
-          "Author: ${{GITHUB_REPOSITORY_OWNER}}
+          "Links.Url": "${{github.server_url}}/${{github.repository}}",
+          "Author": "${{github.repository_owner}}"
           }
+        method: update
+        message: "Metadata updated from repository"
         commitChange: true
 
     - name: Add msbuild to PATH
