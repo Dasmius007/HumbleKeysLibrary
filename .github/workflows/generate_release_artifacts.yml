@@ -48,6 +48,13 @@ jobs:
         if: ${{ (github.ref_type == 'tag') }}
         uses: release-kit/semver@v2
 
+      - name: Debug if condition for 'Set version from Tag'
+        run: |
+          echo "Tag name from steps.version_tag.outputs.major: ${{steps.version_tag.outputs.major}}"
+          echo "Tag name from steps.version_tag.outputs.minor: ${{steps.version_tag.outputs.minor}}"
+          echo "Tag name from steps.version_tag.outputs.patch: ${{steps.version_tag.outputs.patch}}"
+          echo "Comparison evaluation: $${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}"
+
       - name: Set version from Tag
         id: version_tag_setenv
         if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}
@@ -129,7 +136,7 @@ jobs:
           recursive: false
 
       - name: Display the version used
-        run: echo "{{steps.set-assembly-version.outputs.version}}"
+        run: echo "${{steps.set-assembly-version.outputs.version}}"
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
