@@ -206,7 +206,7 @@ jobs:
                 "Version": "${{env.version}}",
                 "ReleaseDate": "$(date +'%Y-%m-%d')",
                 "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext",
-                "Changelog": " | ${{ steps.changelog_contents.outputs.content}}"
+                "Changelog": " | ${{ toJSON(steps.changelog_contents.outputs.content) }}"
               }
             }
           method: update
