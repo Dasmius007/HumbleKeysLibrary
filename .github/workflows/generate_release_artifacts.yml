@@ -210,8 +210,8 @@ jobs:
               "Manifests/HumbleKeysLibrary_Installer.yaml": {
                 "Packages[0].Version": "${{env.version}}",
                 "Packages[0].ReleaseDate": "${{env.NOW}}",
-                "Packages[0].PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext",
                 "Packages[0].Changelog": ${{ toJSON(steps.changelog_contents.outputs.content) }}
+                "Packages[0].PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
               }
             }
           format: 'YAML'
@@ -220,4 +220,4 @@ jobs:
           labels: 'yaml-updates'
           branch: 'feature/manifest_updates'
           message: "Metadata updated from repository"
-          commitChange: true
+          commitChange: false
