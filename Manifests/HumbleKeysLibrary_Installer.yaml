@@ -4,7 +4,7 @@ Packages:
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2024-10-04
     PackageUrl: https://github.com/ecenshu/HumbleKeysLibrary/releases/download/v0.3.4/HumbleKeysLibrary.pext
-    Changelog:
+    Changelog: | 
       ## What's Changed
       # v0.3.4
       * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
