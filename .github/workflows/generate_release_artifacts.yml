@@ -197,7 +197,7 @@ jobs:
                 "Author": "${{github.repository_owner}}"
               },
               "Manifests/HumbleKeysLibrary_AddonDB.yaml": {
-                "IconUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/icon.jpg",
+                "IconUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/icon.png",
                 "InstallerManifestUrl": "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml",
                 "Author": "${{github.repository_owner}}",
                 "SourceUrl": "${{github.server_url}}/${{github.repository}}"
@@ -206,7 +206,7 @@ jobs:
                 "Version": "${{env.version}}",
                 "ReleaseDate": "$(date +'%Y-%m-%d')",
                 "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext",
-                "Changelog": " | {{ steps.changelog_contents.outputs.content}}"
+                "Changelog": " | ${{ steps.changelog_contents.outputs.content}}"
               }
             }
           method: update
