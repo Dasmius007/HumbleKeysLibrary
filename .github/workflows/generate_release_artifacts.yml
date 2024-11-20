@@ -187,6 +187,11 @@ jobs:
         with:
           path: changelog.md
           
+      - name: Put current date into a variable
+        run: |
+          $NOW=& Get-Date -format yyyy-MM-dd
+          echo "NOW=$NOW" >> $env:GITHUB_ENV
+      
       - name: Update Manifests
         uses: fjogeleit/yaml-update-action@main
         with:
@@ -204,9 +209,9 @@ jobs:
               },
               "Manifests/HumbleKeysLibrary_Installer.yaml": {
                 "Version": "${{env.version}}",
-                "ReleaseDate": "$(date +'%Y-%m-%d')",
+                "ReleaseDate": "${{env.NOW}}",
                 "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext",
-                "Changelog": " | ${{ toJSON(steps.changelog_contents.outputs.content) }}"
+                "Changelog": "${{ toJSON(steps.changelog_contents.outputs.content) }}"
               }
             }
           method: update
