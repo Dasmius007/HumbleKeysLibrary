@@ -54,9 +54,9 @@ jobs:
           echo "Tag name from steps.version_tag.outputs.minor: ${{steps.version_tag.outputs.minor}}"
           echo "Tag name from steps.version_tag.outputs.patch: ${{steps.version_tag.outputs.patch}}"
           echo "Tag name from steps.version_tag.outputs.patch: ${{steps.version_tag.outputs.full}}"
-          echo "Tag name from steps.version_tag_generated.outputs.major: ${{steps.version_tag.outputs.major-version}}"
-          echo "Tag name from steps.version_tag_generated.outputs.minor: ${{steps.version_tag.outputs.minor-version}}"
-          echo "Tag name from steps.version_tag_generated.outputs.patch: ${{steps.version_tag.outputs.patch}}"
+          echo "Tag name from steps.version_tag_generated.outputs.major: ${{steps.version_tag_generated.outputs.major-version}}"
+          echo "Tag name from steps.version_tag_generated.outputs.minor: ${{steps.version_tag_generated.outputs.minor-version}}"
+          echo "Tag name from steps.version_tag_generated.outputs.patch: ${{steps.version_tag_generated.outputs.patch}}"
           echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.patch == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch) }}"
 
       - name: Set version from Tag
