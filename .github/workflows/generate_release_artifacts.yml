@@ -214,6 +214,10 @@ jobs:
                 "Packages[0].Changelog": ${{ toJSON(steps.changelog_contents.outputs.content) }}
               }
             }
-          method: update
+          format: 'YAML'
+          method: 'update'
+          createPR: 'true'
+          labels: 'yaml-updates'
+          branch: 'feature/manifest_updates'
           message: "Metadata updated from repository"
           commitChange: true
