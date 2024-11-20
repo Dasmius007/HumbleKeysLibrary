@@ -180,7 +180,13 @@ jobs:
           body_path: changelog.md
           files: 'artifacts/*'
           draft: true
-      
+
+      - name: Read Changelog.md
+        id: changelog_contents
+        uses: jaywcjlove/github-action-read-file@main
+        with:
+          path: changelog.md
+          
       - name: Update Manifests
         uses: fjogeleit/yaml-update-action@main
         with:
@@ -199,7 +205,8 @@ jobs:
               "Manifests/HumbleKeysLibrary_Installer.yaml": {
                 "Version": "${{env.version}}",
                 "ReleaseDate": "$(date +'%Y-%m-%d')",
-                "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
+                "PackageUrl": "${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext",
+                "Changelog": "{{ steps.changelog_contents.outputs.content | markdownify}}"
               }
             }
           method: update
