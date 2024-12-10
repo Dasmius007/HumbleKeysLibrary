@@ -149,15 +149,6 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: nuget restore ${{env.SOLUTION_FILE_PATH}}
         
-      - name: Set version in .\Properties\AssemblyInfo.cs
-        id: set-assembly-version
-        uses: secondbounce/assemblyinfo-update@v2
-        with:
-          version: ${{env.version}}
-          directory: '.\Properties'
-          filename: 'AssemblyInfo.cs'
-          recursive: false
-    
       - name: Display the version used
         run: echo "{{steps.set-assembly-version.outputs.version}}"
            
