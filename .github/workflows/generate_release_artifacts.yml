@@ -184,6 +184,18 @@ jobs:
           files: 'artifacts/*'
           draft: true
 
+  update:
+    runs-on: ubuntu-latest
+    needs: [versioning,build]
+    permissions:
+      contents: write
+    env:
+      artifact-version: ${{ needs.versioning.outputs.artifact-version }}
+      tag-version: ${{ needs.versioning.outputs.tag-version }}
+      generated-version: ${{ needs.versioning.outputs.generated-version }}
+    steps:
+      - uses: actions/checkout@v4
+        
       - name: Read Changelog.md
         id: changelog_contents
         uses: jaywcjlove/github-action-read-file@main
@@ -194,7 +206,7 @@ jobs:
         run: |
           $NOW=& Get-Date -format yyyy-MM-dd
           echo "NOW=$NOW" >> $env:GITHUB_ENV
-      
+
       - name: Update extension.yaml values
         uses: mikefarah/yq@master
         with:
@@ -216,7 +228,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: yq '.Packages[] | select(.Version=="""${{env.version}}""") | .Version'
-      
+
       - name: Add to Installer Manifest
         if: steps.manifest_version.outputs.result
         uses: mikefarah/yq@master
@@ -237,7 +249,7 @@ jobs:
           cmd: |
             yq -i 'with(.Packages[] ; select(.Version=="""${{env.version}}""") | .ReleaseDate="""${{env.NOW}}""" | .Changelog = """${{steps.changelog_contents.outputs.content}}""")')
             ' .\Manifests\HumbleKeysLibrary_Installer.yaml
-      
+
       - name: create pull request
         run: gh pr create -B master --title 'Release[${{env.version}}] Updated manifests for release' --body 'Created by Github action'
         env:
