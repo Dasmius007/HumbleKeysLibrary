@@ -194,6 +194,16 @@ jobs:
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
     steps:
+      - name: Set version from tag
+        if: ${{env.tag-version}}
+        run: echo "version=${{ ${{env.tag-version}} }}" >> $GITHUB_ENV
+      - name: Set version from artifact
+        if: ${{env.artifact-version}}
+        run: echo "version=${{ ${{env.artifact-version}} }}" >> $GITHUB_ENV
+      - name: Set version generated from tag
+        if: ${{env.generated-version}}
+        run: echo "version=${{ ${{env.generated-version}} }}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v4
         
       - name: Read Changelog.md
@@ -209,7 +219,7 @@ jobs:
       - name: Update extension.yaml values
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i '.Version = """${{env.version}}""" | .Author = """${{github.repository_owner}}""" | .Links[] |= select(.Name=="""GitHub""").Url="""${{github.server_url}}/${{github.repository}}"""' .\extension.yaml
+          cmd: yq -i '.Version = """${{env.version}}""" | .Author = """${{github.repository_owner}}""" | .Links[] |= select(.Name=="""GitHub""").Url="""${{github.server_url}}/${{github.repository}}"""' ./extension.yaml
 
       - name: Update AddonDb Manifest
         uses: mikefarah/yq@master
@@ -220,7 +230,7 @@ jobs:
             .InstallerManifestUrl = """https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml""" | 
             .Author = """${{github.repository_owner}}""" | 
             .SourceUrl = """${{github.server_url}}/${{github.repository}}"""
-            ' .\Manifests\HumbleKeysLibrary_Installer.yaml
+            ' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Installer Manifest current version
         id: manifest_version
@@ -239,7 +249,7 @@ jobs:
             """ReleaseData""":"""${{steps.date.outputs.date}}""",
             """PackageUrl""":"""${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext""",
             """Changelog""": """${{steps.changelog_contents.outputs.content}}"""
-            }] + (.[] | del(.Changelog))' .\Manifests\HumbleKeysLibrary_Installer.yaml      
+            }] + (.[] | del(.Changelog))' ./Manifests/HumbleKeysLibrary_Installer.yaml      
 
       - name: Update Installer Manifest
         if: steps.manifest_version.outputs.result==null
@@ -247,7 +257,7 @@ jobs:
         with:
           cmd: |
             yq -i 'with(.Packages[] ; select(.Version=="""${{env.version}}""") | .ReleaseDate="""${{steps.date.outputs.date}}""" | .Changelog = """${{steps.changelog_contents.outputs.content}}""")')
-            ' .\Manifests\HumbleKeysLibrary_Installer.yaml
+            ' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: create pull request
         run: gh pr create -B master --title 'Release[${{env.version}}] Updated manifests for release' --body 'Created by Github action'
