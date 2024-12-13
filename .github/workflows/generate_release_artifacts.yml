@@ -219,24 +219,24 @@ jobs:
       - name: Update extension.yaml values
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i '.Version = """${{env.version}}""" | .Author = """${{github.repository_owner}}""" | .Links[] |= select(.Name=="""GitHub""").Url="""${{github.server_url}}/${{github.repository}}"""' ./extension.yaml
+          cmd: yq -i '.Version = "${{env.version}}" | .Author = "${{github.repository_owner}}" | .Links[] |= select(.Name=="GitHub").Url="${{github.server_url}}/${{github.repository}}"' ./extension.yaml
 
       - name: Update AddonDb Manifest
         uses: mikefarah/yq@master
         with:
           cmd: |
             yq -i '
-            .IconUrl = """https://raw.githubusercontent.com/${{github.repository}}/master/icon.png""" |
-            .InstallerManifestUrl = """https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml""" | 
-            .Author = """${{github.repository_owner}}""" | 
-            .SourceUrl = """${{github.server_url}}/${{github.repository}}"""
+            .IconUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/icon.png" |
+            .InstallerManifestUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml" | 
+            .Author = "${{github.repository_owner}}" | 
+            .SourceUrl = "${{github.server_url}}/${{github.repository}}"
             ' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Installer Manifest current version
         id: manifest_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq '.Packages[] | select(.Version=="""${{env.version}}""") | .Version'
+          cmd: yq '.Packages[] | select(.Version=="${{env.version}}") | .Version'
 
       - name: Add to Installer Manifest
         if: steps.manifest_version.outputs.result
@@ -244,11 +244,11 @@ jobs:
         with:
           cmd: |
             yq -i '.Packages |= [{
-            """Version""":"""${{env.version}}""",
-            """RequiredApiVersion""":.[0].RequiredApiVersion,
-            """ReleaseData""":"""${{steps.date.outputs.date}}""",
-            """PackageUrl""":"""${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext""",
-            """Changelog""": """${{steps.changelog_contents.outputs.content}}"""
+            "Version":"${{env.version}}",
+            "RequiredApiVersion":.[0].RequiredApiVersion,
+            "ReleaseData":"${{steps.date.outputs.date}}",
+            "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext",
+            "Changelog": "${{steps.changelog_contents.outputs.content}}"
             }] + (.[] | del(.Changelog))' ./Manifests/HumbleKeysLibrary_Installer.yaml      
 
       - name: Update Installer Manifest
@@ -256,7 +256,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            yq -i 'with(.Packages[] ; select(.Version=="""${{env.version}}""") | .ReleaseDate="""${{steps.date.outputs.date}}""" | .Changelog = """${{steps.changelog_contents.outputs.content}}""")')
+            yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
             ' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: create pull request
