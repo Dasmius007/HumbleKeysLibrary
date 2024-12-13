@@ -236,10 +236,10 @@ jobs:
         id: manifest_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq '.Packages[] | select(.Version=="${{env.version}}") | .Version'
+          cmd: yq '.Packages[0].Version' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Add to Installer Manifest
-        if: steps.manifest_version.outputs.result
+        if: steps.manifest_version.outputs.result != env.version
         uses: mikefarah/yq@master
         with:
           cmd: |
@@ -248,10 +248,10 @@ jobs:
             "RequiredApiVersion":.[0].RequiredApiVersion,
             "ReleaseData":"${{steps.date.outputs.date}}",
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-            }] + .Packages | .Packages[0].Changelog |= "${{steps.changelog_contents.outputs.content}}"' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            }] + .Packages | .Packages[0].Changelog |= load_str("./changelog.md")' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Update Installer Manifest
-        if: steps.manifest_version.outputs.result==null
+        if: steps.manifest_version.outputs.result == env.version
         uses: mikefarah/yq@master
         with:
           cmd: |
