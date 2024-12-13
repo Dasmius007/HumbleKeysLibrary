@@ -214,7 +214,7 @@ jobs:
           
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "name=date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
     
       - name: Update extension.yaml values
         uses: mikefarah/yq@master
@@ -244,11 +244,11 @@ jobs:
         with:
           cmd: |
             yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages |= [{
-            """Version""":"""${{env.version}}""",
-            """RequiredApiVersion""":.[0].RequiredApiVersion,
-            """ReleaseData""":"""${{steps.date.outputs.date}}""",
-            """PackageUrl""":"""${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"""
-            }] + .Packages | .Packages[0].Changelog |= """${{steps.changelog_contents.outputs.content}}"""' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            "Version":"${{env.version}}",
+            "RequiredApiVersion":.[0].RequiredApiVersion,
+            "ReleaseData":"${{steps.date.outputs.date}}",
+            "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
+            }] + .Packages | .Packages[0].Changelog |= "${{steps.changelog_contents.outputs.content}}"' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Update Installer Manifest
         if: steps.manifest_version.outputs.result==null
