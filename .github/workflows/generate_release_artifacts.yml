@@ -196,13 +196,13 @@ jobs:
     steps:
       - name: Set version from tag
         if: ${{env.tag-version}}
-        run: echo "version=${{ ${{env.tag-version}} }}" >> $GITHUB_ENV
+        run: echo "version=${{ env.tag-version }}" >> $GITHUB_ENV
       - name: Set version from artifact
         if: ${{env.artifact-version}}
-        run: echo "version=${{ ${{env.artifact-version}} }}" >> $GITHUB_ENV
+        run: echo "version=${{ env.artifact-version }}" >> $GITHUB_ENV
       - name: Set version generated from tag
         if: ${{env.generated-version}}
-        run: echo "version=${{ ${{env.generated-version}} }}" >> $GITHUB_ENV
+        run: echo "version=${{ env.generated-version }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         
