@@ -202,11 +202,10 @@ jobs:
         with:
           path: changelog.md
           
-      - name: Put current date into a variable
-        run: |
-          $NOW=& Get-Date -format yyyy-MM-dd
-          echo "NOW=$NOW" >> $env:GITHUB_ENV
-
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    
       - name: Update extension.yaml values
         uses: mikefarah/yq@master
         with:
@@ -237,7 +236,7 @@ jobs:
             yq -i '.Packages |= [{
             """Version""":"""${{env.version}}""",
             """RequiredApiVersion""":.[0].RequiredApiVersion,
-            """ReleaseData""":"""${{env.NOW}}""",
+            """ReleaseData""":"""${{steps.date.outputs.date}}""",
             """PackageUrl""":"""${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext""",
             """Changelog""": """${{steps.changelog_contents.outputs.content}}"""
             }] + (.[] | del(.Changelog))' .\Manifests\HumbleKeysLibrary_Installer.yaml      
@@ -247,7 +246,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            yq -i 'with(.Packages[] ; select(.Version=="""${{env.version}}""") | .ReleaseDate="""${{env.NOW}}""" | .Changelog = """${{steps.changelog_contents.outputs.content}}""")')
+            yq -i 'with(.Packages[] ; select(.Version=="""${{env.version}}""") | .ReleaseDate="""${{steps.date.outputs.date}}""" | .Changelog = """${{steps.changelog_contents.outputs.content}}""")')
             ' .\Manifests\HumbleKeysLibrary_Installer.yaml
 
       - name: create pull request
