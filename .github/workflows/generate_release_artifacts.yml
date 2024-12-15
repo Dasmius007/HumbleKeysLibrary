@@ -261,8 +261,7 @@ jobs:
       - name: Create new branch from tag and push
         if: ${{ (github.ref_type == 'tag') }}
         run: |
-          TAG_NAME="${{ github.event.inputs.tag_name }}"
-          TARGET_BRANCH="${{ github.event.inputs.target_branch }}"
+          TAG_NAME="${{ github.ref_name }}"
           NEW_BRANCH_NAME="pr-for-tag-$TAG_NAME"
           # Create a new branch from the tag
           git checkout -b $NEW_BRANCH_NAME $TAG_NAME
@@ -273,10 +272,9 @@ jobs:
         if: ${{ (github.ref_type == 'tag') }}
         run: |
           NEW_BRANCH_NAME="pr-for-tag-${{ github.ref_name }}"
-          TARGET_BRANCH="${{ github.event.inputs.target_branch }}"
           PR_TITLE="Pull request for tag ${{ github.ref_name }}"
           # Create a pull request
-          gh pr create --title "$PR_TITLE" --body "Creating a pull request from tag ${{ github.ref_name }}" --base $TARGET_BRANCH --head $NEW_BRANCH_NAME --repo ${{ github.repository }}
+          gh pr create --title 'Update manifests from release ${{ github.ref_name }}' --body 'Creating a pull request from tag ${{ github.ref_name }}' --base master --head $NEW_BRANCH_NAME --repo ${{ github.repository }}
 
       - name: create pull request
         if: ${{ (github.ref_type == 'branch') }}
