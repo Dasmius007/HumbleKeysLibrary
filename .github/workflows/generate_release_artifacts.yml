@@ -206,8 +206,24 @@ jobs:
         if: ${{env.generated-version}}
         run: echo "version=${{ env.generated-version }}" >> $GITHUB_ENV
 
+      - name: Create new branch from tag and push
+        if: ${{ (github.ref_type == 'tag') }}
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          NEW_BRANCH_NAME="pr-for-tag-$TAG_NAME"
+          # Create a new branch from the tag
+          git checkout -b $NEW_BRANCH_NAME $TAG_NAME
+          # Push the new branch to the remote repository
+          git push origin $NEW_BRANCH_NAME
+          - 
       - uses: actions/checkout@v4
-        
+        if: ${{ (github.ref_type == 'tag') }}
+        with:
+          ref_name: $NEW_BRANCH_NAME
+
+      - uses: actions/checkout@v4
+        if: ${{ (github.ref_type == 'branch') }}
+
       - name: Read Changelog.md
         id: changelog_contents
         uses: jaywcjlove/github-action-read-file@main
@@ -260,16 +276,6 @@ jobs:
             yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
             ' ./Manifests/HumbleKeysLibrary_Installer.yaml
             
-      - name: Create new branch from tag and push
-        if: ${{ (github.ref_type == 'tag') }}
-        run: |
-          TAG_NAME="${{ github.ref_name }}"
-          NEW_BRANCH_NAME="pr-for-tag-$TAG_NAME"
-          # Create a new branch from the tag
-          git checkout -b $NEW_BRANCH_NAME $TAG_NAME
-          # Push the new branch to the remote repository
-          git push origin $NEW_BRANCH_NAME
-      
       - name: Create pull request
         if: ${{ (github.ref_type == 'tag') }}
         run: |
