@@ -206,6 +206,8 @@ jobs:
         if: ${{env.generated-version}}
         run: echo "version=${{ env.generated-version }}" >> $GITHUB_ENV
 
+      - uses: actions/checkout@v4
+        
       - name: Create new branch from tag and push
         if: ${{ (github.ref_type == 'tag') }}
         run: |
@@ -220,9 +222,6 @@ jobs:
         if: ${{ (github.ref_type == 'tag') }}
         with:
           ref_name: $NEW_BRANCH_NAME
-
-      - uses: actions/checkout@v4
-        if: ${{ (github.ref_type == 'branch') }}
 
       - name: Read Changelog.md
         id: changelog_contents
