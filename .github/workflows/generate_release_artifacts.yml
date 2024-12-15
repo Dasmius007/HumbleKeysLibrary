@@ -217,7 +217,7 @@ jobs:
           git checkout -b $NEW_BRANCH_NAME $TAG_NAME
           # Push the new branch to the remote repository
           git push origin $NEW_BRANCH_NAME
-          - 
+
       - uses: actions/checkout@v4
         if: ${{ (github.ref_type == 'tag') }}
         with:
