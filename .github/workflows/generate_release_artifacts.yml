@@ -189,6 +189,7 @@ jobs:
     needs: [versioning,build]
     permissions:
       contents: write
+      pull-requests: write
     env:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
