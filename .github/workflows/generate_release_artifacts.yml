@@ -221,7 +221,7 @@ jobs:
       - uses: actions/checkout@v4
         if: ${{ (github.ref_type == 'tag') }}
         with:
-          ref_name: $NEW_BRANCH_NAME
+          ref: $NEW_BRANCH_NAME
 
       - name: Read Changelog.md
         id: changelog_contents
