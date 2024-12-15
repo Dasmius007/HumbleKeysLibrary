@@ -257,8 +257,29 @@ jobs:
           cmd: |
             yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
             ' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            
+      - name: Create new branch from tag and push
+        if: ${{ (github.ref_type == 'tag') }}
+        run: |
+          TAG_NAME="${{ github.event.inputs.tag_name }}"
+          TARGET_BRANCH="${{ github.event.inputs.target_branch }}"
+          NEW_BRANCH_NAME="pr-for-tag-$TAG_NAME"
+          # Create a new branch from the tag
+          git checkout -b $NEW_BRANCH_NAME $TAG_NAME
+          # Push the new branch to the remote repository
+          git push origin $NEW_BRANCH_NAME
+      
+      - name: Create pull request
+        if: ${{ (github.ref_type == 'tag') }}
+        run: |
+          NEW_BRANCH_NAME="pr-for-tag-${{ github.event.inputs.tag_name }}"
+          TARGET_BRANCH="${{ github.event.inputs.target_branch }}"
+          PR_TITLE="Pull request for tag ${{ github.event.inputs.tag_name }}"
+          # Create a pull request
+          gh pr create --title "$PR_TITLE" --body "Creating a pull request from tag ${{ github.event.inputs.tag_name }}" --base $TARGET_BRANCH --head $NEW_BRANCH_NAME --repo ${{ github.repository }}
 
       - name: create pull request
+        if: ${{ (github.ref_type == 'branch') }}
         run: gh pr create -B master --title 'Release[${{env.version}}] Updated manifests for release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
