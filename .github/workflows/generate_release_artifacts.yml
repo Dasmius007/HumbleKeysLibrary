@@ -193,6 +193,7 @@ jobs:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Set version from tag
         if: ${{env.tag-version}}
