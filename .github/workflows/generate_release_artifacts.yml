@@ -242,7 +242,7 @@ jobs:
             .InstallerManifestUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml" | 
             .Author = "${{github.repository_owner}}" | 
             .SourceUrl = "${{github.server_url}}/${{github.repository}}"
-            ' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            ' ./Manifests/HumbleKeysLibrary_AddonDB.yaml
 
       - name: Installer Manifest current version
         id: manifest_version
@@ -269,8 +269,28 @@ jobs:
           cmd: |
             yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
             ' ./Manifests/HumbleKeysLibrary_Installer.yaml
-            
-      - name: Create pull request
+
+      - name: Commit AddonDb Manifest
+        run: |
+          if git diff --quiet ./Manifests/HumbleKeysLibrary_AddonDB.yaml; then
+            echo "No changes to commit"
+          else
+            git add ./Manifests/HumbleKeysLibrary_AddonDB.yaml
+            git commit -m "Update AddonDB manifest"
+            git push
+          fi
+
+      - name: Commit Installer Manifest
+        run: |
+          if git diff --quiet ./Manifests/HumbleKeysLibrary_Installer.yaml; then
+            echo "No changes to commit"
+          else
+            git add ./Manifests/HumbleKeysLibrary_Installer.yaml
+            git commit -m "Update Installer manifest"
+            git push
+          fi
+           
+      - name: Create pull request for tag
         if: ${{ (github.ref_type == 'tag') }}
         run: |
           NEW_BRANCH_NAME="pr-for-tag-${{ github.ref_name }}"
@@ -278,7 +298,7 @@ jobs:
           # Create a pull request
           gh pr create --title 'Update manifests from release ${{ github.ref_name }}' --body 'Creating a pull request from tag ${{ github.ref_name }}' --base master --head $NEW_BRANCH_NAME --repo ${{ github.repository }}
 
-      - name: create pull request
+      - name: create pull request for branch
         if: ${{ (github.ref_type == 'branch') }}
         run: gh pr create -B master --title 'Release[${{env.version}}] Updated manifests for release' --body 'Created by Github action'
         env:
