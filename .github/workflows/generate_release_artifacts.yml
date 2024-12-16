@@ -261,7 +261,7 @@ jobs:
         with:
           cmd: |
             IFS= read -rd '' changelog < <(cat changelog.md)
-            changelog=$changelog yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
+            changelog="$changelog" yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":.Packages[0].RequiredApiVersion,
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
