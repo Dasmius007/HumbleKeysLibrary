@@ -260,7 +260,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            IFS= read -rd '' changelog < <(cat changelog.md) ;
+            IFS= read -rd '' changelog < <(cat changelog.md)
             changelog=$changelog yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":.Packages[0].RequiredApiVersion,
