@@ -206,6 +206,11 @@ jobs:
         if: ${{env.generated-version}}
         run: echo "version=${{ env.generated-version }}" >> $GITHUB_ENV
 
+      - name: Set up Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+      
       - uses: actions/checkout@v4
         
       - name: Create new branch from tag and push
