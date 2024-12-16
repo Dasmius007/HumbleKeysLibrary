@@ -221,7 +221,7 @@ jobs:
           # Create a new branch from the tag
           git checkout -b $NEW_BRANCH_NAME $TAG_NAME
           # Push the new branch to the remote repository
-          git push origin $NEW_BRANCH_NAME
+          git push -u origin $NEW_BRANCH_NAME
 
       - name: Read Changelog.md
         id: changelog_contents
