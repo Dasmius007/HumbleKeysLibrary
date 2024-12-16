@@ -264,7 +264,7 @@ jobs:
             changelog=$changelog yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":.[0].RequiredApiVersion,
-            "ReleaseDate": (with_dtf("2025-12-01"; ${{steps.date.outputs.date}}) | from_json),
+            "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
             }] + .Packages | .Packages[0].Changelog |= (from_yaml | strenv(changelog) | to_yaml )' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
