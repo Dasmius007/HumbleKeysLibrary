@@ -260,11 +260,11 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            printf -v changelog "${{steps.changelog_contents.outputs.content}}" ;
-            yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
+            IFS= read -rd '' changelog < <(cat changelog.md) ;
+            changelog=$changelog yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":.[0].RequiredApiVersion,
-            "ReleaseDate":"${{steps.date.outputs.date}}",
+            "ReleaseDate":${{steps.date.outputs.date}},
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
             }] + .Packages | .Packages[0].Changelog |= (from_yaml | strenv(changelog) | to_yaml )' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
