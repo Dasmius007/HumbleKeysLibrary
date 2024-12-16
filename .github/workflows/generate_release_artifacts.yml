@@ -231,8 +231,8 @@ jobs:
           
       - name: Get current date
         id: date
-        run: echo "name=date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-    
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - name: Update extension.yaml values
         uses: mikefarah/yq@master
         with:
@@ -260,12 +260,13 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
+            printf -v changelog "${{steps.changelog_contents.outputs.content}}" ;
             yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":.[0].RequiredApiVersion,
-            "ReleaseData":"${{steps.date.outputs.date}}",
+            "ReleaseDate":"${{steps.date.outputs.date}}",
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-            }] + .Packages | .Packages[0].Changelog |= (from_yaml | load_str("changelog.md") | to_yaml )' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            }] + .Packages | .Packages[0].Changelog |= (from_yaml | strenv(changelog) | to_yaml )' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Update Installer Manifest
         if: steps.manifest_version.outputs.result == env.version
@@ -275,6 +276,16 @@ jobs:
             yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
             ' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
+      - name: Commit extension Manifest
+        run: |
+          if git diff --quiet ./extension.yaml; then
+            echo "No changes to commit"
+          else
+            git add ./extension.yaml
+            git commit -m "Update Extension manifest"
+            git push
+          fi
+          
       - name: Commit AddonDb Manifest
         run: |
           if git diff --quiet ./Manifests/HumbleKeysLibrary_AddonDB.yaml; then
