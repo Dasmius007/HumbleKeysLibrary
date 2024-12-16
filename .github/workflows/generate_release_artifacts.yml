@@ -265,7 +265,7 @@ jobs:
             "RequiredApiVersion":.Packages[0].RequiredApiVersion,
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-            }] + .Packages | .Packages[0].Changelog |= (to_yaml | ${{ steps.changelog_contents.outputs.content }} | from_yaml)' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            }] + .Packages | .Packages[0].Changelog |= (to_yaml | "${{ steps.changelog_contents.outputs.content }}" | from_yaml)' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Update Installer Manifest
         if: steps.manifest_version.outputs.result == env.version
