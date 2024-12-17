@@ -264,7 +264,7 @@ jobs:
             cat <<"EOF"
             ${{ steps.changelog_contents.outputs.content }}
             EOF
-            ) | sed -r "s/\\\"/\\\\"\""/g"
+            ) | sed -r ""s/\\\"/\\\\"\""/g""
             yq -i '(.Packages[] | del(.Changelog)) | parent | parent | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":.Packages[0].RequiredApiVersion,
