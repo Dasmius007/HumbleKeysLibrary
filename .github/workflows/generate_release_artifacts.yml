@@ -261,7 +261,7 @@ jobs:
         with:
           cmd: |
             dqt='"';
-            IFS= read -rd '' changelog < <(cat changelog.md | sed -e '1s/^\xef\xbb\xbf//; s/${dqt}/\\${dqt}/g; s/\r//g');
+            IFS= read -rd '' changelog < <(cat changelog.md | sed -e '1s/^\xef\xbb\xbf//; s/${dqt}/\\\\${dqt}/g; s/\r//g');
             echo "$changelog";
             yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
             "Version":"${{env.version}}",
