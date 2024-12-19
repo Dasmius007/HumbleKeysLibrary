@@ -263,7 +263,7 @@ jobs:
             printf -v dqt '\x22';
             printf -v backslash '\';
             printf -v bom '\uFEFF';
-            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/'"${backslash}"'r//g; s/'"${dqt}"'/'"${backslash}${backslash}${dqt}"'/g; 1s/^'"${bom}"'//');
+            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/'${backslash}'r//g; s/'${dqt}'/'${backslash}${backslash}${dqt}'/g; 1s/^'${bom}'//');
             printf '%s' "$changelog";
             yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
             "Version":"${{env.version}}",
