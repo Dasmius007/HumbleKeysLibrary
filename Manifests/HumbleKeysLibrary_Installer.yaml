@@ -77,3 +77,15 @@ Packages:
       
       * Other key types in the white list
       * Integrating localization
+  - Version: 0.3.3
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-10-03
+    PackageUrl: https://github.com/ecenshu/HumbleKeysLibrary/releases/download/v0.3.3/HumbleKeysLibrary.pext
+  - Version: 0.3.1
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-08-22
+    PackageUrl: https://github.com/ecenshu/HumbleKeysLibrary/releases/download/v0.3.1/HumbleKeysLibrary.pext
+  - Version: 0.3.0
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-08-22
+    PackageUrl: https://github.com/ecenshu/HumbleKeysLibrary/releases/download/v0.3.0/HumbleKeysLibrary.pext
