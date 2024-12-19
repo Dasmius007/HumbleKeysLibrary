@@ -262,7 +262,8 @@ jobs:
           cmd: |
             dqt='"';
             backslash='\';
-            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/'"${backslash}"'r//g; s/'"${dqt}"'/'"${backslash}${backslash}${dqt}"'/g; 1s/^'"${backslash}"'uFEFF//');
+            printf -v bom '\xEF\xBB\xBF';
+            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/'"${backslash}"'r//g; s/'"${dqt}"'/'"${backslash}${backslash}${dqt}"'/g; 1s/^'"$bom"'//');
             echo "$changelog";
             yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
             "Version":"${{env.version}}",
