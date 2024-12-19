@@ -260,7 +260,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/\r//g; s/\x22/\x5c\x22/g; 1s/^\xef\xbb\xbf//');
+            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/\r//g; s/\x22/\x5c\x5c\x5c\x22/g; 1s/^\xef\xbb\xbf//');
             printf '%s' "$changelog";
             yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
             "Version":"${{env.version}}",
