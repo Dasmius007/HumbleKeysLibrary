@@ -265,7 +265,7 @@ jobs:
             printf '%s' "$changelog";
             yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
             "Version":"${{env.version}}",
-            "RequiredApiVersion":${{steps.playnite_api_version.outputs.result}},
+            "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
             }] + .Packages | .Packages[0].Changelog |= "'"${changelog}"'"' ./Manifests/HumbleKeysLibrary_Installer.yaml ./HumbleKeysLibrary.csproj
