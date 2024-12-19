@@ -228,7 +228,7 @@ jobs:
         id: playnite_api_version
         with:
           cmd: |
-            yq '((select(fi==1)) | from_xml | .Project.ItemGroup[].PackageReference[]|select(.@Include=="PlayniteSDK"))' ./HumbleKeysLibrary.csproj
+            yq 'from_xml | .Project.ItemGroup[].PackageReference[] | select(.+@Include=="PlayniteSDK").+@Version' ./HumbleKeysLibrary.csproj
             
       - name: Get current date
         id: date
