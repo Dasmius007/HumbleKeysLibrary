@@ -262,7 +262,7 @@ jobs:
           cmd: |
             dqt='"';
             backslash='\';
-            printf -v bom '\xEF\xBB\xBF';
+            printf -v bom '\uFEFF';
             IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/'"${backslash}"'r//g; s/'"${dqt}"'/'"${backslash}${backslash}${dqt}"'/g; 1s/^'"$bom"'//');
             echo "$changelog";
             yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
