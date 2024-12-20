@@ -1,6 +1,10 @@
 ## What's Changed
 # v0.3.5
 * Automatically create releases with correct metadata to be added to Playnite API Database
+* [OPTIONAL] Keys that are expirable will be tagged with 'Key: Expirable' and when detected during a scan will add a notification of how long until the key expires
+* [OPTIONAL] Keys that have been redeemed can be checked against the Steam Library plugin to see if the redeemed key has actually been redeemed, if it hasn't a notification will display during a library scan.
+* Known issue with Matching redeemed keys against steam library, it will not work and display no match found for DLC
+* Any game keys that have not been redeemed and sold out will now display a notification during a library scan
 
 # v0.3.4
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
