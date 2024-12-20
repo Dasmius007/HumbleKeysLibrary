@@ -1,4 +1,4 @@
-﻿## What's Changed
+## What's Changed
 # v0.3.5
 * Automatically create releases with correct metadata to be added to Playnite API Database
 
@@ -8,7 +8,7 @@
 * Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
 
 # v0.3.3
-* Correct github action to build against correct tag version
+* Correct GitHub action to build against correct tag version
 
 # v0.3.2
 * Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
