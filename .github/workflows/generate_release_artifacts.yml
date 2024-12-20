@@ -57,11 +57,11 @@ jobs:
           echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
           echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
           echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch-version) }}"
+          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}"
 
       - name: Set version from Tag
         id: version_tag_setenv
-        if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version && steps.version_tag.outputs.patch >= steps.version_tag_generated.outputs.patch-version) }}
+        if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}
         run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
         
       - name: Split branch name
