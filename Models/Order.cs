@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 namespace HumbleKeys.Models
@@ -64,6 +66,10 @@ namespace HumbleKeys.Models
                 public string library_family_name;
                 public string steam_app_id;
                 public bool is_expired;
+                public bool sold_out;
+                [JsonProperty("expiration_date|datetime")]
+                public DateTime expiration_date;
+                public int num_days_until_expired;
                 public Newtonsoft.Json.Linq.JToken redeemed_key_val;
                 public bool is_virtual = false;
             }
