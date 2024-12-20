@@ -221,6 +221,7 @@ namespace HumbleKeys
                         {
                             gameEntry = ImportNewGame(tpkd, humbleChoiceTag);
                             importedGames.Add(gameEntry);
+                            UpdateMetaData(gameEntry, sourceOrder, tpkd, humbleChoiceTag);
                             newGameEntry = true;
                         }
                     }
@@ -296,7 +297,8 @@ namespace HumbleKeys
                     {
                         var tagsUpdated = UpdateRedemptionStatus(gameEntry, tpkd, humbleChoiceTag);
                         var linksUpdated = UpdateStoreLinks(gameEntry.Links, tpkd);
-                        if (!tagsUpdated && !linksUpdated) continue;
+                        var propertiesUpdated = UpdateMetaData(gameEntry, sourceOrder, tpkd, humbleChoiceTag);
+                        if (!tagsUpdated && !linksUpdated && !propertiesUpdated) continue;
 
                         if (gameEntry.TagIds.Contains(unredeemableTag.Id))
                         {
@@ -353,6 +355,16 @@ namespace HumbleKeys
             }
             PlayniteApi.Database.EndBufferUpdate();
         }
+
+        private bool UpdateMetaData(Game alreadyImported, Order sourceOrder, Order.TpkdDict.Tpk tpkd,
+            Tag humbleChoiceTag)
+        {
+            if (alreadyImported.Added == sourceOrder.created) return false;
+            
+            alreadyImported.Added = sourceOrder.created;
+            return true;
+
+        } 
 
         bool UpdateStoreLinks(ObservableCollection<Link> links, Order.TpkdDict.Tpk tpkd)
         {
@@ -412,7 +424,7 @@ namespace HumbleKeys
                 Platforms = new HashSet<MetadataProperty> { new MetadataNameProperty(
                         HUMBLE_KEYS_PLATFORM_NAME + tpkd.key_type) },
                 Tags = new HashSet<MetadataProperty>(),
-                Links = new List<Link>(),
+                Links = new List<Link>()
             };
             
             // add tag reflecting redemption status
