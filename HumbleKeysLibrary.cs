@@ -241,11 +241,19 @@ namespace HumbleKeys
                                     })
                             );
                             var expiryNote = tpkd.expiration_date != DateTime.MinValue ? $"Key expires on: {tpkd.expiration_date.ToString(CultureInfo.CurrentCulture)}\n" : $"Key expires on: {DateTime.Now.AddDays(tpkd.num_days_until_expired).ToString(CultureInfo.CurrentCulture)}\n";
-                            if (!gameEntry.Notes.Contains(expiryNote))
+                            
+                            if (string.IsNullOrEmpty(gameEntry.Notes))
                             {
-                                gameEntry.Notes += expiryNote;
+                                gameEntry.Notes = expiryNote;
                             }
-
+                            else
+                            {
+                                if (!gameEntry.Notes.Contains(expiryNote))
+                                {
+                                    gameEntry.Notes += expiryNote;
+                                }
+                            }
+                        
                             PlayniteApi.Database.Games.Update(gameEntry);
                         }
                     }

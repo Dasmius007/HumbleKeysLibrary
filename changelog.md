@@ -1,4 +1,7 @@
 ## What's Changed
+# v0.3.6
+* [Bugfix] Game entries with empty notes were not getting the expiry note added
+
 # v0.3.5
 * Automatically create releases with correct metadata to be added to Playnite API Database
 * [OPTIONAL] Keys that are expirable will be tagged with 'Key: Expirable' and when detected during a scan will add a notification of how long until the key expires
