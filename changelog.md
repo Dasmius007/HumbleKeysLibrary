@@ -1,4 +1,7 @@
 ## What's Changed
+# v0.3.7
+* [Bugfix] Notifications always displaying for tags updated due to DateCreated being not set as UTC
+
 # v0.3.6
 * [Bugfix] Game entries with empty notes were not getting the expiry note added
 
