@@ -367,9 +367,10 @@ namespace HumbleKeys
         private bool UpdateMetaData(Game alreadyImported, Order sourceOrder, Order.TpkdDict.Tpk tpkd,
             Tag humbleChoiceTag)
         {
-            if (alreadyImported.Added == sourceOrder.created) return false;
+            var createdUtcDateTime = sourceOrder.created.ToUniversalTime();
+            if (alreadyImported.Added != null && alreadyImported.Added.Value == createdUtcDateTime) return false;
             
-            alreadyImported.Added = sourceOrder.created;
+            alreadyImported.Added = createdUtcDateTime;
             return true;
 
         } 
