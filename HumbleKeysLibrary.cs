@@ -368,9 +368,14 @@ namespace HumbleKeys
             Tag humbleChoiceTag)
         {
             var createdUtcDateTime = sourceOrder.created.ToUniversalTime();
-            if (alreadyImported.Added != null && alreadyImported.Added.Value == createdUtcDateTime) return false;
+            if (alreadyImported.Added != null)
+            {
+                var addedUtcDateTime = alreadyImported.Added.Value.Kind != DateTimeKind.Utc ? alreadyImported.Added.Value.ToUniversalTime() : alreadyImported.Added.Value;
+                var timeDifference = addedUtcDateTime-createdUtcDateTime;
+                if (timeDifference.Days == 0 && timeDifference.Hours == 0 && timeDifference.Minutes == 0 && timeDifference.Seconds == 0) return false;
+            }
             
-            alreadyImported.Added = createdUtcDateTime;
+            alreadyImported.Added = createdUtcDateTime.ToLocalTime();
             return true;
 
         } 
