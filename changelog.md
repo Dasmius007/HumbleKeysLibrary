@@ -1,4 +1,7 @@
 ## What's Changed
+# v0.3.8
+* [Bugfix] AddedDate stored as DateTimeKind.Local, compare value as UTC and ignore ticks
+
 # v0.3.7
 * [Bugfix] Notifications always displaying for tags updated due to DateCreated being not set as UTC
 
