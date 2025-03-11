@@ -72,7 +72,7 @@ jobs:
         run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
         
       - name: Generate version from branch
-        if: ${{ !steps.version_tag_setenv.outputs.version && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+        if: ${{ steps.version_branch.outputs.version && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
         id: version_branch_generate
         uses: HardNorth/github-version-generate@v1.4.0
         with:
