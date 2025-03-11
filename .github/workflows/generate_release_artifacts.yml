@@ -49,6 +49,7 @@ jobs:
         uses: release-kit/semver@v2
 
       - name: Debug if condition for 'Set version from Tag'
+        if: ${{ (github.ref_type == 'tag') }}
         run: |
           echo "Tag name from steps.version_tag.outputs.major: ${{steps.version_tag.outputs.major}}"
           echo "Tag name from steps.version_tag.outputs.minor: ${{steps.version_tag.outputs.minor}}"
@@ -59,6 +60,7 @@ jobs:
           echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
           echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}"
 
+      
       - name: Set version from Tag
         id: version_tag_setenv
         if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}
@@ -80,18 +82,20 @@ jobs:
           version: ${{steps.version_branch.outputs.branch_version}}
           
       - name: Set env.ARTIFACT_VERSION calculated from releases branch
-        if: ${{ (!steps.version_branch.outputs.branch_version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}
+        if: ${{ (steps.version_branch_generate.outputs.branch_version) && ((steps.version_tag_generated.outputs.major-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag_generated.outputs.minor-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) && (steps.version_tag_generated.outputs.patch-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH)) }}
         id: version_artifact_setenv
         run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
         
       - name: Debug if condition for 'Set env.ARTIFACT_VERSION calculated from releases branch'
         run: |
-          echo "Tag name from steps.version_branch.outputs.branch_version: ${{steps.version_branch.outputs.branch_version}}"
+          echo "Tag name from steps.version_branch_generate.outputs.branch_version: ${{steps.version_branch_generate.outputs.branch_version}}"
           echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
           echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
           echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Comparison evaluation: ${{ (!steps.version_branch.outputs.branch_version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}"
+          echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
+          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH}}"
+          echo "Comparison evaluation: ${{ (steps.version_branch_generate.outputs.branch_version) && ((steps.version_tag_generated.outputs.major-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag_generated.outputs.minor-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) && (steps.version_tag_generated.outputs.patch-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH)) }}"
 
       - name: Set env.TAG_VERSION
         if: ${{ (!steps.version_tag_setenv.outputs.version) && (!steps.version_artifact_setenv.outputs.version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}
