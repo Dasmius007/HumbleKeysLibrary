@@ -32,7 +32,7 @@ jobs:
       artifact-version: ${{ steps.version_artifact_setenv.outputs.version }}
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
-      current-version: ${{ steps.version_tag_generated.outputs.current_version }}
+      current-version: ${{ steps.version_tag_generated.outputs.current-version }}
       next-version-short: ${{ steps.next_version_short.outputs.version }}
     steps:
       - name: Checkout code
@@ -47,7 +47,7 @@ jobs:
       
       - name: Set next-version-short from tag
         id: next_version_short
-        run: echo "version=${{ steps.version_tag_generated.outputs.major_version }}.${{ steps.version_tag_generated.outputs.minor_version }}.${{ steps.version_tag_generated.outputs.patch_version }}"
+        run: echo "version=${{ steps.version_tag_generated.outputs.major-version }}.${{ steps.version_tag_generated.outputs.minor-version }}.${{ steps.version_tag_generated.outputs.patch-version }}"
           
       - name: Parse version from Tag
         id: version_tag
