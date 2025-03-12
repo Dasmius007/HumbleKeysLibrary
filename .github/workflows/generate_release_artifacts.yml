@@ -210,6 +210,7 @@ jobs:
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
       current-version: ${{ needs.versioning.outputs.current-version }}
+      next-version-short: ${{ needs.versioning.outputs.next-version-short }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Set version from tag
