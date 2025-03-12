@@ -32,6 +32,7 @@ jobs:
       artifact-version: ${{ steps.version_artifact_setenv.outputs.version }}
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
+      current-version: ${{ steps.version_tag_generated.outputs.current_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -128,6 +129,7 @@ jobs:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
+      current-version: ${{ needs.versioning.outputs.current-version }}
     permissions: 
       contents: write
     steps:
@@ -274,14 +276,14 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            IFS= read -rd '' changelog < <(cat changelog.md | sed -e 's/\r//g; s/\x22/\\\\"/g');
+            IFS= read -rd '' changelog < <( awk '/^# ${{env.version}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0} flag' changelog.md);
             printf '%s' "$changelog";
-            yq -i '(.Packages[] | select(.Changelog != null) | del(.Changelog)) | parent(2) | .Packages = [{
+            yq -i '(.Packages[] | .Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-            }] + .Packages | .Packages[0].Changelog |= "'"${changelog}"'"' ./Manifests/HumbleKeysLibrary_Installer.yaml ./HumbleKeysLibrary.csproj
+            }] + .Packages | .Packages[0].Changelog = ["'"${changelog}"'"]' ./Manifests/HumbleKeysLibrary_Installer.yaml ./HumbleKeysLibrary.csproj
 
       - name: Update Installer Manifest
         if: steps.manifest_version.outputs.result == env.version
