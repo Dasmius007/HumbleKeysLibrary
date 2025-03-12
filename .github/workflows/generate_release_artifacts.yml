@@ -33,7 +33,7 @@ jobs:
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
       current-version: ${{ steps.version_tag_generated.outputs.current_version }}
-      next-version-short: ${{ steps.version_tag_generated.outputs.major_version }}.${{ steps.version_tag_generated.outputs.minor_version }}.${{ steps.version_tag_generated.outputs.patch_version }}
+      next-version-short: ${{ steps.next_version_short.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,6 +44,10 @@ jobs:
         with:
           scheme: semver
           increment: patch
+      
+      - name: Set next-version-short from tag
+        id: next_version_short
+        run: echo "version=${{ steps.version_tag_generated.outputs.major_version }}.${{ steps.version_tag_generated.outputs.minor_version }}.${{ steps.version_tag_generated.outputs.patch_version }}"
           
       - name: Parse version from Tag
         id: version_tag
