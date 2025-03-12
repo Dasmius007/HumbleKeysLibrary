@@ -47,7 +47,7 @@ jobs:
       
       - name: Set next-version-short from tag
         id: next_version_short
-        run: echo "version=${{ steps.version_tag_generated.outputs.major-version }}.${{ steps.version_tag_generated.outputs.minor-version }}.${{ steps.version_tag_generated.outputs.patch-version }}"
+        run: echo "version=${{ steps.version_tag_generated.outputs.major-version }}.${{ steps.version_tag_generated.outputs.minor-version }}.${{ steps.version_tag_generated.outputs.patch-version }}" >> $GITHUB_OUTPUT
           
       - name: Parse version from Tag
         id: version_tag
