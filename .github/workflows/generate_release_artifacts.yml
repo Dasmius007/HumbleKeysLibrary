@@ -129,7 +129,6 @@ jobs:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
-      current-version: ${{ needs.versioning.outputs.current-version }}
     permissions: 
       contents: write
     steps:
@@ -209,6 +208,7 @@ jobs:
       artifact-version: ${{ needs.versioning.outputs.artifact-version }}
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
+      current-version: ${{ needs.versioning.outputs.current-version }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Set version from tag
@@ -276,9 +276,9 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            IFS= read -rd '' changelog < <( awk '/^# ${{env.version}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0} flag' changelog.md);
+            IFS= read -rd '' changelog < <( awk '/^[\r]*$/{flag=0} /^# ${{env.version}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0} flag {print}' changelog.md);
             printf '%s' "$changelog";
-            yq -i '(.Packages[] | .Packages = [{
+            yq -i '.Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
