@@ -33,7 +33,7 @@ jobs:
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
       current-version: ${{ steps.version_tag_generated.outputs.current-version }}
-      latest-version: ${{ steps.latest-release.outputs.release }}
+      latest-version: ${{ steps.latest-release-semver.outputs.full }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,7 +50,12 @@ jobs:
         with:
           repository: ${{ github.repository }}
           excludes: prerelease, draft
-          
+      - name: Parse version from latest-release
+        id: latest-release-semver
+        uses: release-kit/semver@v2
+        with:
+          string: ${{steps.latest-release.outputs.release}}
+        
       - name: Parse version from Tag
         id: version_tag
         if: ${{ (github.ref_type == 'tag') }}
