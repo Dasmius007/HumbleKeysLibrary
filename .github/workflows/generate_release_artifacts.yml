@@ -33,7 +33,7 @@ jobs:
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
       current-version: ${{ steps.version_tag_generated.outputs.current-version }}
-      prior-version: ${{ steps.previous-release.outputs.release }}
+      prior-version: ${{ steps.previous-release.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,10 +45,12 @@ jobs:
           scheme: semver
           increment: patch
       
-      - name: Get previous release tag
+      - name: 'Get Previous tag'
         id: previous-release
-        uses: sammcoe/get-previous-release-action@v1
-        
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0 # Optional fallback tag to use when no tag can be found
+          
       - name: Parse version from Tag
         id: version_tag
         if: ${{ (github.ref_type == 'tag') }}
