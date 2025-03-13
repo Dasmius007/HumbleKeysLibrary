@@ -1,5 +1,11 @@
 AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
+  - Version: 0.3.9
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2025-03-13
+    PackageUrl: https://github.com/ecenshu/HumbleKeysLibrary/releases/download/v0.3.9/HumbleKeysLibrary_0.3.9.pext
+    Changelog:
+      - '* [Bugfix] Correct Addon and Installer manifests to pass Toolbox verification'
   - Version: 0.3.8
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2025-02-09
