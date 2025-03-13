@@ -33,7 +33,7 @@ jobs:
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
       current-version: ${{ steps.version_tag_generated.outputs.current-version }}
-      next-version-short: ${{ steps.next_version_short.outputs.version }}
+      prior-version: ${{ steps.previous-release.outputs.release }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,10 +45,10 @@ jobs:
           scheme: semver
           increment: patch
       
-      - name: Set next-version-short from tag
-        id: next_version_short
-        run: echo "version=${{ steps.version_tag_generated.outputs.major-version }}.${{ steps.version_tag_generated.outputs.minor-version }}.${{ steps.version_tag_generated.outputs.patch-version }}" >> $GITHUB_OUTPUT
-          
+      - name: Get previous release tag
+        id: previous-release
+        uses: sammcoe/get-previous-release-action@v1
+        
       - name: Parse version from Tag
         id: version_tag
         if: ${{ (github.ref_type == 'tag') }}
@@ -214,7 +214,7 @@ jobs:
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
       current-version: ${{ needs.versioning.outputs.current-version }}
-      next-version-short: ${{ needs.versioning.outputs.next-version-short }}
+      prior-version: ${{ needs.versioning.outputs.prior-version }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Set version from tag
@@ -282,9 +282,9 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.next-version-short}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
+            export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.current-version}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
             yq -i '.Packages = [{
-            "Version":"${{env.next-version-short}}",
+            "Version":"${{env.current-version}}",
             "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/v${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
