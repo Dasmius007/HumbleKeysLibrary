@@ -48,7 +48,7 @@ jobs:
       - id: latest-release
         uses: pozetroninc/github-action-get-latest-release@master
         with:
-          repo: ${{ github.repository }}
+          repository: ${{ github.repository }}
           excludes: prerelease, draft
           
       - name: Parse version from Tag
