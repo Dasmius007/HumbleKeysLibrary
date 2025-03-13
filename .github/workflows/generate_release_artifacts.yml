@@ -33,7 +33,7 @@ jobs:
       tag-version: ${{ steps.version_tag_setenv.outputs.version }}
       generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
       current-version: ${{ steps.version_tag_generated.outputs.current-version }}
-      prior-version: ${{ steps.previous-release.outputs.previousReleaseTag }}
+      latest-version: ${{ steps.latest-release.outputs.release }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,11 +45,11 @@ jobs:
           scheme: semver
           increment: patch
 
-      - name: Get previous version
-        id: previous-release
-        uses: flipdishbytes/github-get-previous-release@v1.0
+      - id: latest-release
+        uses: pozetroninc/github-action-get-latest-release@master
         with:
-          repositoryName: ${{ github.repository }}
+          repo: ${{ github.repository }}
+          excludes: prerelease, draft
           
       - name: Parse version from Tag
         id: version_tag
@@ -216,7 +216,7 @@ jobs:
       tag-version: ${{ needs.versioning.outputs.tag-version }}
       generated-version: ${{ needs.versioning.outputs.generated-version }}
       current-version: ${{ needs.versioning.outputs.current-version }}
-      prior-version: ${{ needs.versioning.outputs.prior-version }}
+      prior-version: ${{ needs.versioning.outputs.latest-version }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Set version from tag
