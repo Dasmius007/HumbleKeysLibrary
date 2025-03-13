@@ -282,14 +282,13 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            IFS= read -rd '' changelog < <( awk '/^[\r]*$/{flag=0} /^# ${{env.next-version-short}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0} flag {print}' changelog.md);
-            printf '%s' "$changelog";
+            export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.next-version-short}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
             yq -i '.Packages = [{
             "Version":"${{env.version}}",
             "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-            }] + .Packages | .Packages[0].Changelog[] = \'"$changelog"\'' ./Manifests/HumbleKeysLibrary_Installer.yaml ./HumbleKeysLibrary.csproj
+            }] + .Packages | .Packages[0].Changelog = env(CHANGELOG) | .Packages[0].Changelog style="single"' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Update Installer Manifest
         if: steps.manifest_version.outputs.result == env.version
