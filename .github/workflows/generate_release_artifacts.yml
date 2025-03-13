@@ -284,7 +284,7 @@ jobs:
           cmd: |
             export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.next-version-short}}/{flag=1;next} /^# ${{env.current-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
             yq -i '.Packages = [{
-            "Version":"${{env.version}}",
+            "Version":"${{env.next-version-short}}",
             "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
             "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
             "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
