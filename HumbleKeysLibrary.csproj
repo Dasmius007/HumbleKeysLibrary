@@ -87,6 +87,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="PlayniteSDK" Version="6.9.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="changelog.md" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Gather artifact sources for PEXT creation" AfterTargets="Build">
     <Copy SourceFiles="$(OutputPath)\extension.yaml" DestinationFolder="$(OutputPath)/pext/sources"/>
