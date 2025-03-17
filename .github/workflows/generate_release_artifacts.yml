@@ -302,8 +302,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
-            ' ./Manifests/HumbleKeysLibrary_Installer.yaml
+            yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}")' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
       - name: Commit extension Manifest
         run: |
