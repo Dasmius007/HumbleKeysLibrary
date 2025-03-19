@@ -1,28 +1,4 @@
 ﻿## What's Changed
-# v0.3.4
-* Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
-* Corrected tooltips for Unredeemable key handling
-* Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
-
-# v0.3.3
-* Correct github action to build against correct tag version
-
-# v0.3.2
-* Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
-* Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
-* Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
-* Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either expired and cannot be redeemed or part of a Bundle where all choices have been made)
-* Add new option to allow for either tagging a Game as 'Key: Unredeemable' or not add to the library
-
-# v0.3.1
-* Correct version number to match release version
-
-# v0.3.0
-New Features:
-* Added Optional feature to import games in Humble Choice Monthly bundles.
-* Added Optional feature to create tags based on Bundle Names (Either all Bundles or Monthly only)
-* Added Optional feature to cache API Objects as JSON files in the ExtensionsData directory
-
 # v0.2.0
 Updated for new SDK. Also fixes Newtonsoft.Json exceptions thrown when Humble API returns **redeemed_key_val**
 as a JObject instead of JString.
