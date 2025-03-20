@@ -1,10 +1,5 @@
 AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
-  - Version: 0.3.4
-    RequiredApiVersion: 6.9.0
-    ReleaseDate: 2025-03-19
-    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/v0.3.0/HumbleKeysLibrary_0.3.0.pext
-    Changelog: []
   - Version: 0.2.0
     RequiredApiVersion: 6.1.8
     ReleaseDate: 2022-06-09
