@@ -1,350 +1,353 @@
-﻿# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+﻿  # This workflow uses actions that are not certified by GitHub.
+  # They are provided by a third-party and are governed by
+  # separate terms of service, privacy policy, and support
+  # documentation.
+  
+  name: Generate release artifacts
+  
+  on:
+    push:
+      branches: [ "releases/**" ]
+      tags:
+        - v[0-9]+.[0-9]+.[0-9]+*
+  env:
+    # Path to the solution file relative to the root of the project.
+    SOLUTION_FILE_PATH: .
+    
+    # Configuration type to build.
+    # You can convert this to a build matrix if you need coverage of multiple configuration types.
+    # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    BUILD_CONFIGURATION: Release
+  
+  permissions:
+    contents: read
+  
+  jobs:
+    # if the commit was done as a tag, use the tag as semver if it is newer than current generated version from tags
+    # if the commit was done via the releases/v* branch, use the branch name as semver, assumes work is being done to prepare for release and no tag exists for the branch version yet
+    # if a commit is done on the release branch with no semver, generate it based on tags in repo
+    versioning:
+      runs-on: ubuntu-latest
+      outputs:
+        artifact-version: ${{ steps.version_artifact_setenv.outputs.version }}
+        tag-version: ${{ steps.version_tag_setenv.outputs.version }}
+        generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
+        current-version: ${{ steps.version_tag_generated.outputs.current-version }}
+        latest-version: ${{ steps.latest-release-semver.outputs.full }}
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-name: Generate release artifacts
+        - name: Generate version numbers from existing tags
+          id: version_tag_generated
+          uses: reecetech/version-increment@2023.10.1
+          with:
+            scheme: semver
+            increment: patch
 
-on:
-  push:
-    branches: [ "releases/**" ]
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+*
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
+        - id: latest-release
+          uses: pozetroninc/github-action-get-latest-release@master
+          with:
+            repository: ${{ github.repository }}
+            excludes: prerelease, draft
+        - name: Parse version from latest-release
+          id: latest-release-semver
+          uses: release-kit/semver@v2
+          with:
+            string: ${{steps.latest-release.outputs.release}}
 
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
+        - name: Parse version from Tag
+          id: version_tag
+          if: ${{ (github.ref_type == 'tag') }}
+          uses: release-kit/semver@v2
 
-permissions:
-  contents: read
+        - name: Debug if condition for 'Set version from Tag'
+          if: ${{ (github.ref_type == 'tag') }}
+          run: |
+            echo "Tag name from steps.version_tag.outputs.major: ${{steps.version_tag.outputs.major}}"
+            echo "Tag name from steps.version_tag.outputs.minor: ${{steps.version_tag.outputs.minor}}"
+            echo "Tag name from steps.version_tag.outputs.patch: ${{steps.version_tag.outputs.patch}}"
+            echo "Tag name from steps.version_tag.outputs.full: ${{steps.version_tag.outputs.full}}"
+            echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
+            echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
+            echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
+            echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}"
 
-jobs:
-  # if the commit was done as a tag, use the tag as semver if it is newer than current generated version from tags
-  # if the commit was done via the releases/v* branch, use the branch name as semver, assumes work is being done to prepare for release and no tag exists for the branch version yet
-  # if a commit is done on the release branch with no semver, generate it based on tags in repo
-  versioning:
-    runs-on: ubuntu-latest
-    outputs:
-      artifact-version: ${{ steps.version_artifact_setenv.outputs.version }}
-      tag-version: ${{ steps.version_tag_setenv.outputs.version }}
-      generated-version: ${{ steps.version_tag_generated_setenv.outputs.version }}
-      current-version: ${{ steps.version_tag_generated.outputs.current-version }}
-      latest-version: ${{ steps.latest-release-semver.outputs.full }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Generate version numbers from existing tags
-        id: version_tag_generated
-        uses: reecetech/version-increment@2023.10.1
-        with:
-          scheme: semver
-          increment: patch
 
-      - id: latest-release
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          repository: ${{ github.repository }}
-          excludes: prerelease, draft
-      - name: Parse version from latest-release
-        id: latest-release-semver
-        uses: release-kit/semver@v2
-        with:
-          string: ${{steps.latest-release.outputs.release}}
-        
-      - name: Parse version from Tag
-        id: version_tag
-        if: ${{ (github.ref_type == 'tag') }}
-        uses: release-kit/semver@v2
+        - name: Set version from Tag
+          id: version_tag_setenv
+          if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}
+          run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
 
-      - name: Debug if condition for 'Set version from Tag'
-        if: ${{ (github.ref_type == 'tag') }}
-        run: |
-          echo "Tag name from steps.version_tag.outputs.major: ${{steps.version_tag.outputs.major}}"
-          echo "Tag name from steps.version_tag.outputs.minor: ${{steps.version_tag.outputs.minor}}"
-          echo "Tag name from steps.version_tag.outputs.patch: ${{steps.version_tag.outputs.patch}}"
-          echo "Tag name from steps.version_tag.outputs.full: ${{steps.version_tag.outputs.full}}"
-          echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
-          echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
-          echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
-          echo "Comparison evaluation: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}"
+        - name: Split branch name
+          if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+          env:
+            BRANCH: ${{ github.ref_name }}
+          id: version_branch
+          run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
 
-      
-      - name: Set version from Tag
-        id: version_tag_setenv
-        if: ${{ (steps.version_tag.outputs.major > steps.version_tag_generated.outputs.major-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor > steps.version_tag_generated.outputs.minor-version) || (steps.version_tag.outputs.major == steps.version_tag_generated.outputs.major-version && steps.version_tag.outputs.minor == steps.version_tag_generated.outputs.minor-version) }}
-        run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
-        
-      - name: Split branch name
-        if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
-        env:
-          BRANCH: ${{ github.ref_name }}
-        id: version_branch
-        run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
-        
-      - name: Generate version from branch
-        if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
-        id: version_branch_generate
-        uses: HardNorth/github-version-generate@v1.4.0
-        with:
-          version-source: variable
-          version: ${{steps.version_branch.outputs.branch_version}}
-          
-      - name: Set env.ARTIFACT_VERSION calculated from releases branch
-        if: ${{ (steps.version_branch_generate.outputs.CURRENT_VERSION) && ((steps.version_tag_generated.outputs.major-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag_generated.outputs.minor-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) && (steps.version_tag_generated.outputs.patch-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH)) }}
-        id: version_artifact_setenv
-        run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
-        
-      - name: Debug if condition for 'Set env.ARTIFACT_VERSION calculated from releases branch'
-        run: |
-          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION: ${{steps.version_branch_generate.outputs.CURRENT_VERSION}}"
-          echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
-          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
-          echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
-          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
-          echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
-          echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH}}"
-          echo "Comparison evaluation: ${{ (steps.version_branch_generate.outputs.branch_version) && ((steps.version_tag_generated.outputs.major-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) && (steps.version_tag_generated.outputs.minor-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR) && (steps.version_tag_generated.outputs.patch-version >= steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH)) }}"
+        - name: Generate version from branch
+          if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+          id: version_branch_generate
+          uses: HardNorth/github-version-generate@v1.4.0
+          with:
+            version-source: variable
+            version: ${{steps.version_branch.outputs.branch_version}}
 
-      - name: Set env.TAG_VERSION
-        if: ${{ (!steps.version_tag_setenv.outputs.version) && (!steps.version_artifact_setenv.outputs.version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}
-        id: version_tag_generated_setenv
-        run: echo "version=${{ steps.version_tag_generated.outputs.current_version}}" >> $GITHUB_OUTPUT
+        - name: Set env.ARTIFACT_VERSION calculated from releases branch
+          if: ${{ (steps.version_branch_generate.outputs.CURRENT_VERSION) && ((steps.version_branch_generate.outputs.major-version > steps.version_tag_generated.outputs.CURRENT_VERSION_MAJOR) || ((steps.version_branch_generate.outputs.major-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MAJOR) && ((steps.version_branch_generate.outputs.minor-version > steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) || ((steps.version_branch_generate.outputs.minor-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) && (steps.version_branch_generate.outputs.patch-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_PATCH))))) }}
+          id: version_artifact_setenv
+          run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
 
-      - name: Set env.ARTIFACT_VERSION from tag
-        if: ${{ steps.version_tag_generated_setenv.outputs.version && github.ref_type == 'tag' }}
-        id: version_artifact_tag_setenv
-        run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
-          
-#      - name: GitHub Tag Name example
-#        run: |
-#          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
-#          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
-#          echo "Version parsed from tags: steps.version_tag_generated.outputs.version = ${{steps.version_tag_generated.outputs.version}}
-#          echo "Semver generated env.CURRENT_VERSION: ${{env.CURRENT_VERSION}}
-#          echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
-#          echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
-#          echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
-#          echo "Semver generated env.TAG_VERSION: ${{env.TAG_VERSION}}
-#          echo "Semver generated steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}
+        - name: Debug if condition for 'Set env.ARTIFACT_VERSION calculated from releases branch'
+          run: |
+            echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION: ${{steps.version_branch_generate.outputs.CURRENT_VERSION}}"
+            echo "Tag name from steps.version_tag_generated.outputs.major-version: ${{steps.version_tag_generated.outputs.major-version}}"
+            echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}"
+            echo "Tag name from steps.version_tag_generated.outputs.minor-version: ${{steps.version_tag_generated.outputs.minor-version}}"
+            echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR}}"
+            echo "Tag name from steps.version_tag_generated.outputs.patch-version: ${{steps.version_tag_generated.outputs.patch-version}}"
+            echo "Tag name from steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_PATCH}}"
+            echo "Comparison evaluation: ${{ (steps.version_branch_generate.outputs.CURRENT_VERSION) && ((steps.version_branch_generate.outputs.major-version > steps.version_tag_generated.outputs.CURRENT_VERSION_MAJOR) || ((steps.version_branch_generate.outputs.major-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MAJOR) && ((steps.version_branch_generate.outputs.minor-version > steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) || ((steps.version_branch_generate.outputs.minor-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) && (steps.version_branch_generate.outputs.patch-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_PATCH))))) }}"
+            echo "Comparison breakdown major: ${{ (steps.version_branch_generate.outputs.major-version > steps.version_tag_generated.outputs.CURRENT_VERSION_MAJOR) }}"
+            echo "Comparison breakdown major.minor: ${{ ((steps.version_branch_generate.outputs.major-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MAJOR) && ((steps.version_branch_generate.outputs.minor-version > steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) || ((steps.version_branch_generate.outputs.minor-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) && (steps.version_branch_generate.outputs.patch-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_PATCH)))) }}"
+            echo "Comparison breakdown major.minor.patch: ${{ (((steps.version_branch_generate.outputs.minor-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_MINOR) && (steps.version_branch_generate.outputs.patch-version >= steps.version_tag_generated.outputs.CURRENT_VERSION_PATCH))) }}"
 
-  build:
-    #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
-    # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
-    runs-on: windows-2019
-    needs: [versioning]
-    env:
-      artifact-version: ${{ needs.versioning.outputs.artifact-version }}
-      tag-version: ${{ needs.versioning.outputs.tag-version }}
-      generated-version: ${{ needs.versioning.outputs.generated-version }}
-    permissions: 
-      contents: write
-    steps:
-      - name: Set version from tag
-        if: ${{env.tag-version}}
-        run: Add-Content -Path $env:GITHUB_ENV -Value "version=${{env.tag-version}}"
-      - name: Set version from artifact
-        if: ${{env.artifact-version}}
-        run: Add-Content -Path $env:GITHUB_ENV -Value "version=${{env.artifact-version}}"
-      - name: Set version generated from tag
-        if: ${{env.generated-version}}
-        run: Add-Content -Path $env:GITHUB_ENV -Value "version=${{env.generated-version}}"
+        - name: Set env.TAG_VERSION
+          if: ${{ (!steps.version_tag_setenv.outputs.version) && (!steps.version_artifact_setenv.outputs.version) && ((steps.version_tag_generated.outputs.major-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR) || (steps.version_tag_generated.outputs.minor-version != steps.version_branch_generate.outputs.CURRENT_VERSION_MINOR)) }}
+          id: version_tag_generated_setenv
+          run: echo "version=${{ steps.version_tag_generated.outputs.current_version}}" >> $GITHUB_OUTPUT
 
-      - uses: actions/checkout@v4
+        - name: Set env.ARTIFACT_VERSION from tag
+          if: ${{ steps.version_tag_generated_setenv.outputs.version && github.ref_type == 'tag' }}
+          id: version_artifact_tag_setenv
+          run: echo "version=${{steps.version_branch_generate.outputs.CURRENT_VERSION}}" >> $GITHUB_OUTPUT
+    
+    #      - name: GitHub Tag Name example
+    #        run: |
+    #          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
+    #          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
+    #          echo "Version parsed from tags: steps.version_tag_generated.outputs.version = ${{steps.version_tag_generated.outputs.version}}
+    #          echo "Semver generated env.CURRENT_VERSION: ${{env.CURRENT_VERSION}}
+    #          echo "Semver generated env.RELEASE_VERSION: ${{env.RELEASE_VERSION}}
+    #          echo "Semver generated env.NEXT_VERSION: ${{env.NEXT_VERSION}}
+    #          echo "Semver generated env.NEXT_RELEASE_VERSION: ${{env.NEXT_RELEASE_VERSION}}
+    #          echo "Semver generated env.TAG_VERSION: ${{env.TAG_VERSION}}
+    #          echo "Semver generated steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR: ${{steps.version_branch_generate.outputs.CURRENT_VERSION_MAJOR}}
+    
+    build:
+      #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
+      # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
+      runs-on: windows-2019
+      needs: [versioning]
+      env:
+        artifact-version: ${{ needs.versioning.outputs.artifact-version }}
+        tag-version: ${{ needs.versioning.outputs.tag-version }}
+        generated-version: ${{ needs.versioning.outputs.generated-version }}
+      permissions:
+        contents: write
+      steps:
+        - name: Set version from tag
+          if: ${{env.tag-version}}
+          run: Add-Content -Path $env:GITHUB_ENV -Value "version=${{env.tag-version}}"
+        - name: Set version from artifact
+          if: ${{env.artifact-version}}
+          run: Add-Content -Path $env:GITHUB_ENV -Value "version=${{env.artifact-version}}"
+        - name: Set version generated from tag
+          if: ${{env.generated-version}}
+          run: Add-Content -Path $env:GITHUB_ENV -Value "version=${{env.generated-version}}"
 
-      - name: Set version in .\Properties\AssemblyInfo.cs
-        id: set-assembly-version
-        uses: secondbounce/assemblyinfo-update@v2
-        with:
-          version: ${{env.version}}
-          directory: '.\Properties'
-          filename: 'AssemblyInfo.cs'
-          recursive: false
+        - uses: actions/checkout@v4
 
-      - name: Display the version used
-        run: echo "${{steps.set-assembly-version.outputs.version}}"
+        - name: Set version in .\Properties\AssemblyInfo.cs
+          id: set-assembly-version
+          uses: secondbounce/assemblyinfo-update@v2
+          with:
+            version: ${{env.version}}
+            directory: '.\Properties'
+            filename: 'AssemblyInfo.cs'
+            recursive: false
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        - name: Display the version used
+          run: echo "${{steps.set-assembly-version.outputs.version}}"
 
-      - name: Restore NuGet packages
-        working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: nuget restore ${{env.SOLUTION_FILE_PATH}}
-        
-      - name: Display the version used
-        run: echo "{{steps.set-assembly-version.outputs.version}}"
-           
-      - name: Build app for release
-        working-directory: ${{env.GITHUB_WORKSPACE}}
-        # Add additional options to the MSBuild command line here (like platform or verbosity level).
-        # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-        run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}} /verbosity:diag
-          
-      - name: Rename PEXT for upload
-        run: mv bin/Release/pext/HumbleKeysLibrary.pext bin/Release/pext/HumbleKeysLibrary_${{env.version}}.pext
-        
-      - name: Create Artifacts
-        uses: actions/upload-artifact@v4.3.6
-        with:
-          name: "HumbleKeysLibrary_${{env.version}}.pext"
-          path: bin/Release/pext/HumbleKeysLibrary_${{env.version}}.pext
-          if-no-files-found: 'error'
-          overwrite: 'true'
-      
-      - name: Download artifact to be added to release
-        id: download-artifact
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "HumbleKeysLibrary_${{env.version}}.pext"
-          path: 'artifacts'
-      
-      - name: Create Draft Release
-        uses: softprops/action-gh-release@v2.0.8
-        with: 
-          name: ${{env.version}}
-          body_path: changelog.md
-          files: 'artifacts/*'
-          draft: true
+        - name: Add msbuild to PATH
+          uses: microsoft/setup-msbuild@v2
 
-  update:
-    runs-on: ubuntu-latest
-    needs: [versioning,build]
-    permissions:
-      contents: write
-      pull-requests: write
-    env:
-      artifact-version: ${{ needs.versioning.outputs.artifact-version }}
-      tag-version: ${{ needs.versioning.outputs.tag-version }}
-      generated-version: ${{ needs.versioning.outputs.generated-version }}
-      current-version: ${{ needs.versioning.outputs.current-version }}
-      prior-version: ${{ needs.versioning.outputs.latest-version }}
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Set version from tag
-        if: ${{env.tag-version}}
-        run: echo "version=${{ env.tag-version }}" >> $GITHUB_ENV
-      - name: Set version from artifact
-        if: ${{env.artifact-version}}
-        run: echo "version=${{ env.artifact-version }}" >> $GITHUB_ENV
-      - name: Set version generated from tag
-        if: ${{env.generated-version}}
-        run: echo "version=${{ env.generated-version }}" >> $GITHUB_ENV
+        - name: Restore NuGet packages
+          working-directory: ${{env.GITHUB_WORKSPACE}}
+          run: nuget restore ${{env.SOLUTION_FILE_PATH}}
 
-      - name: Set up Git
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-      
-      - uses: actions/checkout@v4
-        
-      - name: Create new branch from tag and push
-        if: ${{ (github.ref_type == 'tag') }}
-        run: |
-          TAG_NAME="${{ github.ref_name }}"
-          NEW_BRANCH_NAME="pr-for-tag-$TAG_NAME"
-          # Create a new branch from the tag
-          git checkout -b $NEW_BRANCH_NAME $TAG_NAME
-          # Push the new branch to the remote repository
-          git push -u origin $NEW_BRANCH_NAME
+        - name: Display the version used
+          run: echo "{{steps.set-assembly-version.outputs.version}}"
 
-      - name: Get PlayniteSDK version
-        uses: mikefarah/yq@master
-        id: playnite_api_version
-        with:
-          cmd: |
-            yq 'from_xml | .Project.ItemGroup[].PackageReference[] | select(.+@Include=="PlayniteSDK").+@Version' ./HumbleKeysLibrary.csproj
-            
-      - name: Get current date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        - name: Build app for release
+          working-directory: ${{env.GITHUB_WORKSPACE}}
+          # Add additional options to the MSBuild command line here (like platform or verbosity level).
+          # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+          run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}} /verbosity:diag
 
-      - name: Update extension.yaml values
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq -i '.Version = "${{env.version}}" | .Author = "${{github.repository_owner}}" | .Links[] |= select(.Name=="GitHub").Url="${{github.server_url}}/${{github.repository}}"' ./extension.yaml
+        - name: Rename PEXT for upload
+          run: mv bin/Release/pext/HumbleKeysLibrary.pext bin/Release/pext/HumbleKeysLibrary_${{env.version}}.pext
 
-      - name: Update AddonDb Manifest
-        uses: mikefarah/yq@master
-        with:
-          cmd: |
-            yq -i '
-            .IconUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/icon.png" |
-            .InstallerManifestUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml" | 
-            .Author = "${{github.repository_owner}}" | 
-            .SourceUrl = "${{github.server_url}}/${{github.repository}}"
-            ' ./Manifests/HumbleKeysLibrary_AddonDB.yaml
+        - name: Create Artifacts
+          uses: actions/upload-artifact@v4.3.6
+          with:
+            name: "HumbleKeysLibrary_${{env.version}}.pext"
+            path: bin/Release/pext/HumbleKeysLibrary_${{env.version}}.pext
+            if-no-files-found: 'error'
+            overwrite: 'true'
 
-      - name: Installer Manifest current version
-        id: manifest_version
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq '.Packages[0].Version' ./Manifests/HumbleKeysLibrary_Installer.yaml
+        - name: Download artifact to be added to release
+          id: download-artifact
+          uses: actions/download-artifact@v4.1.8
+          with:
+            name: "HumbleKeysLibrary_${{env.version}}.pext"
+            path: 'artifacts'
 
-      - name: Add to Installer Manifest
-        if: steps.manifest_version.outputs.result != env.version
-        uses: mikefarah/yq@master
-        with:
-          cmd: |
-            export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.current-version}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
-            yq -i '.Packages = [{
-            "Version":"${{env.current-version}}",
-            "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
-            "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
-            "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/v${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
-            }] + .Packages | .Packages[0].Changelog = env(CHANGELOG) | .Packages[0].Changelog style="single"' ./Manifests/HumbleKeysLibrary_Installer.yaml
+        - name: Create Draft Release
+          uses: softprops/action-gh-release@v2.0.8
+          with:
+            name: ${{env.version}}
+            body_path: changelog.md
+            files: 'artifacts/*'
+            draft: true
+    
+    update:
+      runs-on: ubuntu-latest
+      needs: [versioning,build]
+      permissions:
+        contents: write
+        pull-requests: write
+      env:
+        artifact-version: ${{ needs.versioning.outputs.artifact-version }}
+        tag-version: ${{ needs.versioning.outputs.tag-version }}
+        generated-version: ${{ needs.versioning.outputs.generated-version }}
+        current-version: ${{ needs.versioning.outputs.current-version }}
+        prior-version: ${{ needs.versioning.outputs.latest-version }}
+        GH_TOKEN: ${{ github.token }}
+      steps:
+        - name: Set version from tag
+          if: ${{env.tag-version}}
+          run: echo "version=${{ env.tag-version }}" >> $GITHUB_ENV
+        - name: Set version from artifact
+          if: ${{env.artifact-version}}
+          run: echo "version=${{ env.artifact-version }}" >> $GITHUB_ENV
+        - name: Set version generated from tag
+          if: ${{env.generated-version}}
+          run: echo "version=${{ env.generated-version }}" >> $GITHUB_ENV
 
-      - name: Update Installer Manifest
-        if: steps.manifest_version.outputs.result == env.version
-        uses: mikefarah/yq@master
-        with:
-          cmd: |
-            yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
-            ' ./Manifests/HumbleKeysLibrary_Installer.yaml
+        - name: Set up Git
+          run: |
+            git config --global user.name 'GitHub Actions'
+            git config --global user.email 'actions@github.com'
 
-      - name: Commit extension Manifest
-        run: |
-          if git diff --quiet ./extension.yaml; then
-            echo "No changes to commit"
-          else
-            git add ./extension.yaml
-            git commit -m "Update Extension manifest"
-            git push
-          fi
-          
-      - name: Commit AddonDb Manifest
-        run: |
-          if git diff --quiet ./Manifests/HumbleKeysLibrary_AddonDB.yaml; then
-            echo "No changes to commit"
-          else
-            git add ./Manifests/HumbleKeysLibrary_AddonDB.yaml
-            git commit -m "Update AddonDB manifest"
-            git push
-          fi
+        - uses: actions/checkout@v4
 
-      - name: Commit Installer Manifest
-        run: |
-          if git diff --quiet ./Manifests/HumbleKeysLibrary_Installer.yaml; then
-            echo "No changes to commit"
-          else
-            git add ./Manifests/HumbleKeysLibrary_Installer.yaml
-            git commit -m "Update Installer manifest"
-            git push
-          fi
-           
-      - name: Create pull request for tag
-        if: ${{ (github.ref_type == 'tag') }}
-        run: |
-          NEW_BRANCH_NAME="pr-for-tag-${{ github.ref_name }}"
-          PR_TITLE="Pull request for tag ${{ github.ref_name }}"
-          # Create a pull request
-          gh pr create --title 'Update manifests from release ${{ github.ref_name }}' --body 'Creating a pull request from tag ${{ github.ref_name }}' --base master --head $NEW_BRANCH_NAME --repo ${{ github.repository }}
+        - name: Create new branch from tag and push
+          if: ${{ (github.ref_type == 'tag') }}
+          run: |
+            TAG_NAME="${{ github.ref_name }}"
+            NEW_BRANCH_NAME="pr-for-tag-$TAG_NAME"
+            # Create a new branch from the tag
+            git checkout -b $NEW_BRANCH_NAME $TAG_NAME
+            # Push the new branch to the remote repository
+            git push -u origin $NEW_BRANCH_NAME
 
-      - name: create pull request for branch
-        if: ${{ (github.ref_type == 'branch') }}
-        run: gh pr create -B master --title 'Release[${{env.version}}] Updated manifests for release' --body 'Created by Github action'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        - name: Get PlayniteSDK version
+          uses: mikefarah/yq@master
+          id: playnite_api_version
+          with:
+            cmd: |
+              yq 'from_xml | .Project.ItemGroup[].PackageReference[] | select(.+@Include=="PlayniteSDK").+@Version' ./HumbleKeysLibrary.csproj
+
+        - name: Get current date
+          id: date
+          run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+        - name: Update extension.yaml values
+          uses: mikefarah/yq@master
+          with:
+            cmd: yq -i '.Version = "${{env.version}}" | .Author = "${{github.repository_owner}}" | .Links[] |= select(.Name=="GitHub").Url="${{github.server_url}}/${{github.repository}}"' ./extension.yaml
+
+        - name: Update AddonDb Manifest
+          uses: mikefarah/yq@master
+          with:
+            cmd: |
+              yq -i '
+              .IconUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/icon.png" |
+              .InstallerManifestUrl = "https://raw.githubusercontent.com/${{github.repository}}/master/Manifests/HumbleKeysLibrary_Installer.yaml" | 
+              .Author = "${{github.repository_owner}}" | 
+              .SourceUrl = "${{github.server_url}}/${{github.repository}}"
+              ' ./Manifests/HumbleKeysLibrary_AddonDB.yaml
+
+        - name: Installer Manifest current version
+          id: manifest_version
+          uses: mikefarah/yq@master
+          with:
+            cmd: yq '.Packages[0].Version' ./Manifests/HumbleKeysLibrary_Installer.yaml
+
+        - name: Add to Installer Manifest
+          if: steps.manifest_version.outputs.result != env.version
+          uses: mikefarah/yq@master
+          with:
+            cmd: |
+              export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.version}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {print ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
+              yq -i '.Packages = [{
+              "Version":"${{env.version}}",
+              "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
+              "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
+              "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
+              }] + .Packages | .Packages[0].Changelog = env(CHANGELOG) | .Packages[0].Changelog style="single"' ./Manifests/HumbleKeysLibrary_Installer.yaml
+
+        - name: Update Installer Manifest
+          if: steps.manifest_version.outputs.result == env.version
+          uses: mikefarah/yq@master
+          with:
+            cmd: |
+              export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.version}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
+              yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate=(with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json) | .Changelog = env(CHANGELOG) | .Changelog style="single")' ./Manifests/HumbleKeysLibrary_Installer.yaml
+
+        - name: Commit extension Manifest
+          run: |
+            if git diff --quiet ./extension.yaml; then
+              echo "No changes to commit"
+            else
+              git add ./extension.yaml
+              git commit -m "Update Extension manifest"
+              git push
+            fi
+
+        - name: Commit AddonDb Manifest
+          run: |
+            if git diff --quiet ./Manifests/HumbleKeysLibrary_AddonDB.yaml; then
+              echo "No changes to commit"
+            else
+              git add ./Manifests/HumbleKeysLibrary_AddonDB.yaml
+              git commit -m "Update AddonDB manifest"
+              git push
+            fi
+
+        - name: Commit Installer Manifest
+          run: |
+            if git diff --quiet ./Manifests/HumbleKeysLibrary_Installer.yaml; then
+              echo "No changes to commit"
+            else
+              git add ./Manifests/HumbleKeysLibrary_Installer.yaml
+              git commit -m "Update Installer manifest"
+              git push
+            fi
+
+        - name: Create pull request for tag
+          if: ${{ (github.ref_type == 'tag') }}
+          run: |
+            NEW_BRANCH_NAME="pr-for-tag-${{ github.ref_name }}"
+            PR_TITLE="Pull request for tag ${{ github.ref_name }}"
+            # Create a pull request
+            gh pr create --title 'Update manifests from release ${{ github.ref_name }}' --body 'Creating a pull request from tag ${{ github.ref_name }}' --base master --head $NEW_BRANCH_NAME --repo ${{ github.repository }}
+
+        - name: create pull request for branch
+          if: ${{ (github.ref_type == 'branch') }}
+          run: gh pr create -B master --title 'Release[${{env.version}}] Updated manifests for release' --body 'Created by Github action'
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
