@@ -22,6 +22,10 @@ namespace HumbleKeys
 
         public string CurrentUnredeemableMethodology { get; set; } = "tag";
         
+        public bool ExpirableNotification { get; set; } = false;
+        
+        public bool UnclaimedGameNotification { get; set; } = false;
+        
         [DontSerialize]
         public List<string> keyTypeWhitelist = new List<string>() {
             "gog",

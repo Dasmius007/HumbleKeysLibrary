@@ -1,8 +1,21 @@
-﻿## What's Changed
+## What's Changed
+# 0.3.9
+* [Bugfix] Correct Addon and Installer manifests to pass Toolbox verification
+* [Bugfix] AddedDate stored as DateTimeKind.Local, compare value as UTC and ignore ticks
+* [Bugfix] Notifications always displaying for tags updated due to DateCreated being not set as UTC
+* [Bugfix] Game entries with empty notes were not getting the expiry note added
+* Automatically create releases with correct metadata to be added to Playnite API Database
+* [OPTIONAL] Keys that are expirable will be tagged with 'Key: Expirable' and when detected during a scan will add a notification of how long until the key expires
+* [OPTIONAL] Keys that have been redeemed can be checked against the Steam Library plugin to see if the redeemed key has actually been redeemed, if it hasn't a notification will display during a library scan.
+* Known issue with Matching redeemed keys against steam library, it will not work and display no match found for DLC
+* Any game keys that have not been redeemed and sold out will now display a notification during a library scan
+* Entries added to the Playnite Database will use the original order date as the creation date instead of today. Clearing the Playnite database and reimporting should yield same sort order.
+
 # 0.3.4
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
 * Corrected tooltips for Unredeemable key handling
 * Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
+* Correct GitHub action to build against correct tag version
 * Correct github action to build against correct tag version
 * Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
 * Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
@@ -44,7 +57,7 @@ since that information is already in "Platform".
 
 
 # 0.1.0 Pre-release
-Release v0.1.0
+Release 0.1.0
 Installation
 Drag and drop the .pext file onto your Playnite window.
 
