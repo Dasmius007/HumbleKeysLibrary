@@ -1,12 +1,12 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Toolbox pack" type="RunNativeExe" factoryName="Native Executable" activateToolWindowBeforeRun="false">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/../../../Games/Playnite/Toolbox.exe" />
-    <option name="PROGRAM_PARAMETERS" value="pack $PROJECT_DIR$\bin\release $PROJECT_DIR$\publish" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bin/Release" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/../../../../Games/Playnite/Toolbox.exe" />
+    <option name="PROGRAM_PARAMETERS" value="pack bin\release publish" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <method v="2">
-      <option name="Build" default="false" projectName="HumbleKeysLibrary" projectPath="file://$PROJECT_DIR$/HumbleKeysLibrary.csproj" />
+      <option name="Build" default="false" projectName="HumbleKeysLibrary" projectPath="$PROJECT_DIR$/HumbleKeysLibrary.csproj" />
     </method>
   </configuration>
 </component>

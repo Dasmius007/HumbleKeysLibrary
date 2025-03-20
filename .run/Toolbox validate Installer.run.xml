@@ -1,7 +1,7 @@
 ﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Toolbox validate AddonDB" type="RunNativeExe" factoryName="Native Executable">
+  <configuration default="false" name="Toolbox validate Installer" type="RunNativeExe" factoryName="Native Executable">
     <option name="EXE_PATH" value="$PROJECT_DIR$/../../../../Games/Playnite/Toolbox.exe" />
-    <option name="PROGRAM_PARAMETERS" value="verify Addon Manifests/HumbleKeysLibrary_AddonDB.yaml" />
+    <option name="PROGRAM_PARAMETERS" value="verify Installer Manifests/HumbleKeysLibrary_Installer.yaml" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
