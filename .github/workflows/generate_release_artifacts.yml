@@ -292,9 +292,9 @@
           uses: mikefarah/yq@master
           with:
             cmd: |
-              export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.current-version}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
+              export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.current}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
               yq -i '.Packages = [{
-              "Version":"${{env.current-version}}",
+              "Version":"${{env.version}}",
               "RequiredApiVersion":"${{steps.playnite_api_version.outputs.result}}",
               "ReleaseDate": (with_dtf("2025-12-01"; "${{steps.date.outputs.date}}") | from_json),
               "PackageUrl":"${{github.server_url}}/${{github.repository}}/releases/download/v${{env.version}}/HumbleKeysLibrary_${{env.version}}.pext"
