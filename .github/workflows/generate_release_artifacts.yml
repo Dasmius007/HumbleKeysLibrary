@@ -305,7 +305,8 @@
           uses: mikefarah/yq@master
           with:
             cmd: |
-              yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = "${{steps.changelog_contents.outputs.content}}")')
+              export CHANGELOG=`awk 'BEGIN {print "["}/^[\r]*$/{flag=1;next} /^# ${{env.current}}/{flag=1;next} /^# ${{env.prior-version}}/{flag=0;exit} (firstline) {printf ","} flag {printf("\047%s\047",$0);firstline=1} END {print "]"}' changelog.md`
+              yq -i 'with(.Packages[] ; select(.Version=="${{env.version}}") | .ReleaseDate="${{steps.date.outputs.date}}" | .Changelog = env(CHANGELOG))')
               ' ./Manifests/HumbleKeysLibrary_Installer.yaml
 
         - name: Commit extension Manifest
