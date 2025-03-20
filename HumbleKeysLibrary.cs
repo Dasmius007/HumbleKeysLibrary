@@ -23,7 +23,7 @@ namespace HumbleKeys
         private const string REDEEMED_STR = "Key: Redeemed";
         private const string UNREDEEMED_STR = "Key: Unredeemed";
         private const string UNREDEEMABLE_STR = "Key: Unredeemable";
-        private static readonly string[] PAST_TAGS = { REDEEMED_STR, UNREDEEMED_STR, UNREDEEMABLE_STR, "Redeemed", "Unredeemed", };
+        private static readonly string[] PAST_TAGS = { REDEEMED_STR, UNREDEEMED_STR, UNREDEEMABLE_STR, "Redeemed", "Unredeemed", "Unredeemable"};
         private const string HUMBLE_KEYS_SRC_NAME = "Humble Keys";
         private const string HUMBLE_KEYS_PLATFORM_NAME = "Humble Key: ";
         #endregion
@@ -133,7 +133,7 @@ namespace HumbleKeys
         {
             var redeemedTag = PlayniteApi.Database.Tags.Add(REDEEMED_STR);
             var unredeemedTag = PlayniteApi.Database.Tags.Add(UNREDEEMED_STR);
-            var unredeemableTag = PlayniteApi.Database.Tags.Add(new MetadataNameProperty(UNREDEEMABLE_STR));
+            var unredeemableTag = PlayniteApi.Database.Tags.Add(UNREDEEMABLE_STR);
             
             PlayniteApi.Database.BeginBufferUpdate();
             foreach (var tpkdGroup in tpkds)
