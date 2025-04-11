@@ -1,2 +1,3 @@
+.github/workflows/* text eol=lf
 changelog.md text eol=lf
 Manifests/* text eol=lf

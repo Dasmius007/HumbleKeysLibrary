@@ -1,17 +1,9 @@
 ## What's Changed
 # 0.3.9
 * [Bugfix] Correct Addon and Installer manifests to pass Toolbox verification
-
-# 0.3.8
 * [Bugfix] AddedDate stored as DateTimeKind.Local, compare value as UTC and ignore ticks
-
-# 0.3.7
 * [Bugfix] Notifications always displaying for tags updated due to DateCreated being not set as UTC
-
-# 0.3.6
 * [Bugfix] Game entries with empty notes were not getting the expiry note added
-
-# 0.3.5
 * Automatically create releases with correct metadata to be added to Playnite API Database
 * [OPTIONAL] Keys that are expirable will be tagged with 'Key: Expirable' and when detected during a scan will add a notification of how long until the key expires
 * [OPTIONAL] Keys that have been redeemed can be checked against the Steam Library plugin to see if the redeemed key has actually been redeemed, if it hasn't a notification will display during a library scan.
@@ -23,22 +15,13 @@
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
 * Corrected tooltips for Unredeemable key handling
 * Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
-
-# 0.3.3
 * Correct GitHub action to build against correct tag version
-
-# 0.3.2
 * Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
 * Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
 * Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
 * Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either expired and cannot be redeemed or part of a Bundle where all choices have been made)
-* Add new option to allow for either tagging a Game as 'Key: Unredeemable' or not add to the library
-
-# 0.3.1
+* Add new option to allow for either tagging a Game as "Key: Unredeemable" or not add to the library
 * Correct version number to match release version
-
-# 0.3.0
-New Features:
 * Added Optional feature to import games in Humble Choice Monthly bundles.
 * Added Optional feature to create tags based on Bundle Names (Either all Bundles or Monthly only)
 * Added Optional feature to cache API Objects as JSON files in the ExtensionsData directory
