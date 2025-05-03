@@ -82,6 +82,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Localization\en-US.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
@@ -95,14 +99,15 @@
     <Content Include="LICENSE" />
     <Content Include="README.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Gather artifact sources for PEXT creation" AfterTargets="Build">
-    <Copy SourceFiles="$(OutputPath)\extension.yaml" DestinationFolder="$(OutputPath)/pext/sources"/>
-    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="$(OutputPath)/pext/sources"/>
-    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="$(OutputPath)/pext/sources"/>
-    <Copy SourceFiles="$(OutputPath)\icon.png" DestinationFolder="$(OutputPath)/pext/sources"/>
+    <Copy SourceFiles="$(OutputPath)\extension.yaml" DestinationFolder="$(OutputPath)/pext/sources" />
+    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="$(OutputPath)/pext/sources" />
+    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="$(OutputPath)/pext/sources" />
+    <Copy SourceFiles="$(OutputPath)\icon.png" DestinationFolder="$(OutputPath)/pext/sources" />
   </Target>
   <Target Name="Create PEXT" AfterTargets="Gather artifact sources for PEXT creation">
-    <ZipDirectory DestinationFile="$(OutputPath)/pext/$(AssemblyName).pext" SourceDirectory="$(OutputPath)/pext/sources" Overwrite="true"/>
+    <ZipDirectory DestinationFile="$(OutputPath)/pext/$(AssemblyName).pext" SourceDirectory="$(OutputPath)/pext/sources" Overwrite="true" />
   </Target>
 </Project>

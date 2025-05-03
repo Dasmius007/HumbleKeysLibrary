@@ -32,7 +32,7 @@ namespace HumbleKeys
         private HumbleKeysLibrarySettings Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("62ac4052-e08a-4a1a-b70a-c2c0c3673bb9");
-        public override string Name => "Humble Keys Library";
+        public override string Name => "Humble Keys";
 
         // Implementing Client adds ability to open it via special menu in Playnite.
         public override LibraryClient Client { get; } = new HumbleKeysLibraryClient();
