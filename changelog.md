@@ -1,4 +1,11 @@
 ﻿## What's Changed
+# 0.3.5
+* Added support for multiple languages (currently only English is implemented, but other languages can now be added)
+* Language is determined by Windows culture (may add a setting for it later)
+* Fixed missing "Connect account" description next to checkbox
+* Fixed missing "Authenticate" button text
+* Now shows authentication status next to the button like other library add-ons
+
 # 0.3.4
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
 * Corrected tooltips for Unredeemable key handling
