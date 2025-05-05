@@ -2,7 +2,7 @@ AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
   - Version: 0.3.6
     RequiredApiVersion: 6.9.0
-    ReleaseDate: 2025-05-04
+    ReleaseDate: 2025-05-05
     PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.3.6/HumbleKeysLibrary_0.3.6.pext
     Changelog:
       - '* Added support for multiple languages (currently only English is implemented, but other languages can now be added)'
