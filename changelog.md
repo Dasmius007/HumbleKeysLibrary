@@ -1,25 +1,28 @@
 ﻿## What's Changed
 # 0.3.7
-- Added support for multiple languages (currently only English is implemented, but other languages can now be added)
-- Language is determined by Windows culture (may add a setting for it later)
-- Fixed missing "Connect account" description next to checkbox
-- Fixed missing "Authenticate" button text
-- Now shows authentication status next to the button like other library add-ons
+* Restored plugin name to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
+
+# 0.3.6
+* Added support for multiple languages (currently only English is implemented, but other languages can now be added)
+* Language is determined by Windows culture (may add a setting for it later)
+* Fixed missing "Connect account" description next to checkbox
+* Fixed missing "Authenticate" button text
+* Now shows authentication status next to the button like other library add-ons
 
 # 0.3.4
-- Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
-- Corrected tooltips for Unredeemable key handling
-- Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
-- Correct github action to build against correct tag version
-- Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
-- Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
-- Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
-- Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either expired and cannot be redeemed or part of a Bundle where all choices have been made)
-- Add new option to allow for either tagging a Game as "Key: Unredeemable" or not add to the library
-- Correct version number to match release version
-- Added Optional feature to import games in Humble Choice Monthly bundles.
-- Added Optional feature to create tags based on Bundle Names (Either all Bundles or Monthly only)
-- Added Optional feature to cache API Objects as JSON files in the ExtensionsData directory
+* Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
+* Corrected tooltips for Unredeemable key handling
+* Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
+* Correct github action to build against correct tag version
+* Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
+* Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
+* Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
+* Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either expired and cannot be redeemed or part of a Bundle where all choices have been made)
+* Add new option to allow for either tagging a Game as "Key: Unredeemable" or not add to the library
+* Correct version number to match release version
+* Added Optional feature to import games in Humble Choice Monthly bundles.
+* Added Optional feature to create tags based on Bundle Names (Either all Bundles or Monthly only)
+* Added Optional feature to cache API Objects as JSON files in the ExtensionsData directory
 
 # 0.2.0
 Updated for new SDK. Also fixes Newtonsoft.Json exceptions thrown when Humble API returns **redeemed_key_val**
