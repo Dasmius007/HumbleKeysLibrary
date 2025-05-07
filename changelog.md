@@ -1,6 +1,7 @@
 ﻿## What's Changed
-# 0.3.7
-* Restored plugin name to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
+# 0.3.8
+* Restored plugin name
+* Restored plugin GUID to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
 
 # 0.3.6
 * Added support for multiple languages (currently only English is implemented, but other languages can now be added)
