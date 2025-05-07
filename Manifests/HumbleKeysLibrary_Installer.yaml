@@ -5,8 +5,8 @@ Packages:
     ReleaseDate: 2025-05-07
     PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.3.8/HumbleKeysLibrary_0.3.8.pext
     Changelog:
-      - Restored plugin name
-      - Restored plugin GUID to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
+      - '* Restored plugin name'
+      - '* Restored plugin GUID to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser'
   - Version: 0.3.6
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2025-05-04
