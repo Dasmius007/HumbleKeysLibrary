@@ -1,11 +1,12 @@
 AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
-  - Version: 0.3.7
+  - Version: 0.3.8
     RequiredApiVersion: 6.9.0
-    ReleaseDate: 2025-05-06
-    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.3.7/HumbleKeysLibrary_0.3.7.pext
+    ReleaseDate: 2025-05-07
+    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.3.8/HumbleKeysLibrary_0.3.8.pext
     Changelog:
-      - Restored plugin name to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
+      - Restored plugin name
+      - Restored plugin GUID to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
   - Version: 0.3.6
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2025-05-04
