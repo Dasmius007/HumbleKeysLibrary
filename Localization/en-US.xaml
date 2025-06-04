@@ -1,0 +1,8 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <sys:String x:Key="LOCHumbleSettingsConnectAccount">Connect account</sys:String>
+  <sys:String x:Key="LOCHumbleLoginChecking">Checking authentication status…</sys:String>
+  <sys:String x:Key="LOCHumbleLoggedIn">User is authenticated</sys:String>
+  <sys:String x:Key="LOCHumbleNotLoggedIn">Requires authentication</sys:String>
+  <sys:String x:Key="LOCHumbleNotLoggedInError">Failed to authenticate user.</sys:String>
+  <sys:String x:Key="LOCHumbleAuthenticateLabel">Authenticate</sys:String>
+</ResourceDictionary>

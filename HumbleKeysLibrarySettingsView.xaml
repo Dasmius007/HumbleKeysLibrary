@@ -13,16 +13,18 @@
 		</Style>
 	</d:DesignerProperties.DesignStyle>
 
-	<UserControl.Resources>
-		<sys:Boolean x:Key="True">True</sys:Boolean>
-		<sys:Boolean x:Key="False">False</sys:Boolean>
-	</UserControl.Resources>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <sys:Boolean x:Key="True">True</sys:Boolean>
+            <sys:Boolean x:Key="False">False</sys:Boolean>
 
-	<StackPanel Margin="20">
-		<!--<CheckBox x:Name="CheckHumbleConnectAccount"
-				  IsChecked="{Binding ConnectAccount}"
-				  Content="{DynamicResource LOCSettingsConnectAccount}"
-				  />-->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/HumbleKeysLibrary;component/Localization/en-US.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Margin="20">
 		<CheckBox x:Name="CheckHumbleConnectAccount"
 				  IsChecked="{Binding ConnectAccount}"
 			  Content="{DynamicResource LOCHumbleSettingsConnectAccount}"/>
@@ -76,10 +78,10 @@
 					<TextBlock
 						Name="UnredeemableKeyHandling"
 						Text="Unredeemable key handling"
-						ToolTip="If Tag is selected a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeeemable', if Delete is selected the game will be deleted from the library if it is not able to be redeemed"
+						ToolTip="If Tag is selected a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeemable', if Delete is selected the game will be deleted from the library if it cannot be redeemed"
 						Grid.Column="0"/>
 					<ListBox Margin="10 0 0 0 " Name="UnredeemableKeyValues" SelectedValuePath="Tag" SelectedValue="{Binding CurrentUnredeemableMethodology, Mode=TwoWay}" Grid.Column="1" SelectionMode="Single">
-						<ListBoxItem Tag="tag" ToolTip="Create only Tags for games that cannnot be redeemed">Tag</ListBoxItem>
+						<ListBoxItem Tag="tag" ToolTip="Create only Tags for games that cannot be redeemed">Tag</ListBoxItem>
 						<ListBoxItem Tag="delete" ToolTip="Delete games that cannot be redeemed">Delete</ListBoxItem>
 					</ListBox>
 				</Grid>
@@ -100,10 +102,8 @@
 			          Name="EnableCache"
 			          ToolTip="When checked, Humble Keys Library will create a persistent Cache in ExtensionsData directory, if a Cache entry exists, it will no longer be retrieved from Humble"/>
 			<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-				<!--<Button Content="{DynamicResource LOCAuthenticateLabel}" HorizontalAlignment="Left"
-						Command="{Binding LoginCommand}" Margin="0,5,5,5"/>-->
 				<Button Content="{DynamicResource LOCHumbleAuthenticateLabel}" HorizontalAlignment="Left"
-										Command="{Binding LoginCommand}" Margin="0,5,5,5"/>
+					Command="{Binding LoginCommand}" Margin="0,5,5,5"/>
 				<TextBlock VerticalAlignment="Center" Margin="10,5,5,5">
 					<TextBlock.Tag>
 						<PriorityBinding>
@@ -112,18 +112,15 @@
 						</PriorityBinding>
 					</TextBlock.Tag>
 					<TextBlock.Style>
-						<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}">
-							<Style.Triggers>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}">
+                            <Style.Triggers>
 								<Trigger Property="Tag" Value="{StaticResource True}">
-									<!--<Setter Property="Text" Value="{DynamicResource LOCLoggedIn}" />-->
 									<Setter Property="Text" Value="{DynamicResource LOCHumbleLoggedIn}" />
 								</Trigger>
 								<Trigger Property="Tag" Value="{StaticResource False}">
-									<!--<Setter Property="Text" Value="{DynamicResource LOCNotLoggedIn}" />-->
 									<Setter Property="Text" Value="{DynamicResource LOCHumbleNotLoggedIn}" />
 								</Trigger>
 								<Trigger Property="Tag" Value="{x:Null}">
-									<!--<Setter Property="Text" Value="{DynamicResource LOCLoginChecking}" />-->
 									<Setter Property="Text" Value="{DynamicResource LOCHumbleLoginChecking}" />
 								</Trigger>
 							</Style.Triggers>

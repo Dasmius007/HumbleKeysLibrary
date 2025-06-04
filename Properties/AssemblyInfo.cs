@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HumbleKeysLibrary")]
 [assembly: AssemblyDescription("Library Plug-in for Playnite")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Fierce Punch Studios")]
+[assembly: AssemblyCompany("Dasmius007")]
 [assembly: AssemblyProduct("HumbleKeysLibrary")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright © 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

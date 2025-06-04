@@ -1,15 +1,14 @@
-## What's Changed
-# 0.3.9
-* [Bugfix] Correct Addon and Installer manifests to pass Toolbox verification
-* [Bugfix] AddedDate stored as DateTimeKind.Local, compare value as UTC and ignore ticks
-* [Bugfix] Notifications always displaying for tags updated due to DateCreated being not set as UTC
-* [Bugfix] Game entries with empty notes were not getting the expiry note added
-* Automatically create releases with correct metadata to be added to Playnite API Database
-* [OPTIONAL] Keys that are expirable will be tagged with 'Key: Expirable' and when detected during a scan will add a notification of how long until the key expires
-* [OPTIONAL] Keys that have been redeemed can be checked against the Steam Library plugin to see if the redeemed key has actually been redeemed, if it hasn't a notification will display during a library scan.
-* Known issue with Matching redeemed keys against steam library, it will not work and display no match found for DLC
-* Any game keys that have not been redeemed and sold out will now display a notification during a library scan
-* Entries added to the Playnite Database will use the original order date as the creation date instead of today. Clearing the Playnite database and reimporting should yield same sort order.
+﻿## What's Changed
+# 0.3.8
+* Restored plugin name
+* Restored plugin GUID to fix broken auto-update process from old versions, prevent duplicate old & new plugins installed at the same time, and ensure "Already installed" button works properly in Add-on Browser
+
+# 0.3.6
+* Added support for multiple languages (currently only English is implemented, but other languages can now be added)
+* Language is determined by Windows culture (may add a setting for it later)
+* Fixed missing "Connect account" description next to checkbox
+* Fixed missing "Authenticate" button text
+* Now shows authentication status next to the button like other library add-ons
 
 # 0.3.4
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
@@ -20,7 +19,7 @@
 * Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
 * Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
 * Add additional logic to HumbleKeysLibrary to handle unredeemable virtual orders (either expired and cannot be redeemed or part of a Bundle where all choices have been made)
-* Add new option to allow for either tagging a Game as "Key: Unredeemable" or not add to the library
+* Add new option to allow for either tagging a Game as Key "Unredeemable" or not add to the library
 * Correct version number to match release version
 * Added Optional feature to import games in Humble Choice Monthly bundles.
 * Added Optional feature to create tags based on Bundle Names (Either all Bundles or Monthly only)
@@ -67,7 +66,7 @@ First release implements:
 * Checking against a key type whitelist (currently only permits steam keys)
 * Reporting the Redeemed / Unredeemed status as tags
 * Updates Redeemed / Unredeemed on previously imported games when loading the Humble Keys Library
-  Creates a link to your Humble "downloads" page
+* Creates a link to your Humble "downloads" page
 
 Upcoming features:
 
