@@ -14,7 +14,7 @@
 * Altered how tags are handled to deal with scenario where tags get removed manually via Manage Library function of Playnite
 * Corrected tooltips for Unredeemable key handling
 * Remove prerequisite "Import Choice Game" from "Unredeemable key handling" options
-* Correct GitHub action to build against correct tag version
+* Correct github action to build against correct tag version
 * Update ChoiceMonth model to include ChoicesRemaining and ChoicesMade
 * Update Order model to determine virtual orders (items added from Bundle instead of from persisted record on server)
 * Alter HumbleKeysAccountClient to add virtual orders that have not yet been added to the Order
@@ -55,7 +55,7 @@ since that information is already in "Platform".
 
 
 # 0.1.0 Pre-release
-Release 0.1.0
+Release v0.1.0
 Installation
 Drag and drop the .pext file onto your Playnite window.
 
