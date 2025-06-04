@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   build:
-    #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
+    # Project uses .NET Framework 4.6.2 which is not in later GitHub hosted runners
     # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
     runs-on: windows-2019
 
