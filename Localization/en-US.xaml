@@ -5,4 +5,8 @@
   <sys:String x:Key="LOCHumbleNotLoggedIn">Requires authentication</sys:String>
   <sys:String x:Key="LOCHumbleNotLoggedInError">Failed to authenticate user.</sys:String>
   <sys:String x:Key="LOCHumbleAuthenticateLabel">Authenticate</sys:String>
+  <sys:String x:Key="LOCHumbleAddLinks">Add Humble &amp; Steam links</sys:String>
+  <sys:String x:Key="LOCHumbleRedemptionStoreTip">Add the store the key is for (e.g. Steam) to this field</sys:String>
+  <sys:String x:Key="LOCHumbleTagWithBundleTip">When None is not selected, Humble Keys Library will add a new Tag per Bundle Name</sys:String>
+  <sys:String x:Key="LOCHumbleUnredeemableKeyHandlingTip">If Tag is selected a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeemable', if Delete is selected the game will be deleted from the library if it cannot be redeemed</sys:String>
 </ResourceDictionary>
