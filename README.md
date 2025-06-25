@@ -1,6 +1,10 @@
+# Humble Keys Library
+![DownloadCountTotal](https://img.shields.io/github/downloads/Dasmius007/HumbleKeysLibrary/total?label=Total%20Downloads&style=plastic)
+![DownloadCountLatest](https://img.shields.io/github/downloads/Dasmius007/HumbleKeysLibrary/latest/total?label=Downloads@Latest&style=plastic)
+![LatestVersion](https://img.shields.io/github/v/release/Dasmius007/HumbleKeysLibrary?label=Latest%20Version&style=plastic)
+![BuildStatus](https://img.shields.io/github/actions/workflow/status/Dasmius007/HumbleKeysLibrary/generate_release_artifacts.yml?label=Build)
 [![Build PEXT](https://github.com/Dasmius007/HumbleKeysLibrary/actions/workflows/msbuild.yml/badge.svg?event=push)](https://github.com/Dasmius007/HumbleKeysLibrary/actions/workflows/msbuild.yml)
 
-# HumbleKeysLibrary
 Humble Keys Library is a library plug-in extension for [Playnite](https://playnite.link/) which queries [Humble Bundle](https://www.humblebundle.com/) for third-party keys, and also supports Humble Choice subscription games.
 
 The default Humble Library plug-in only reports DRM-free games, not the keys for third-party services like Steam. Humble Keys Library allows you to search your entire collection for a game, to make sure you don't buy a new copy in the latest sale if you already have one from a previous Humble Bundle.
