@@ -52,6 +52,11 @@ namespace HumbleKeys
         public int TagWithBundleName { get; set; } = (int)TagMethodology.None;
         public int UnredeemableKeyHandling { get; set; } = (int)UnredeemableMethodology.Tag;
         public bool CacheEnabled { get; set; } = false;
+
+        [Obsolete("Deprecated, scheduled for deletion: Use TagWithBundleName instead")]
+        public string CurrentTagMethodology { get; set; }
+        [Obsolete("Deprecated, scheduled for deletion: Use UnredeemableKeyHandling instead")]
+        public string CurrentUnredeemableMethodology { get; set; }
         public bool AddPlatformNintendo { get; set; } = true;
         public bool AddPlatformWindows { get; set; } = true;
 
@@ -104,6 +109,36 @@ namespace HumbleKeys
 
             if (savedSettings != null)
             {
+                // Migrate old setting strings to enum ints; This code section is scheduled for deletion in the future
+                if (savedSettings.CurrentTagMethodology != null || savedSettings.CurrentUnredeemableMethodology != null)
+                {
+                    switch (savedSettings.CurrentTagMethodology)
+                    {
+                        //case "none":  // None is default, so already correct
+                        case "monthly":
+                            savedSettings.TagWithBundleName = (int)TagMethodology.Monthly;
+                            break;
+                        case "all":
+                            savedSettings.TagWithBundleName = (int)TagMethodology.All;
+                            break;
+                    }
+
+                    // Tag is default, so no need to fix
+                    if (savedSettings.CurrentUnredeemableMethodology == "delete")
+                    {
+                        savedSettings.UnredeemableKeyHandling = (int)UnredeemableMethodology.Delete;
+                    }
+
+                    // Clear deprecated values so migration only happens once
+                    savedSettings.CurrentTagMethodology = null;
+                    savedSettings.CurrentUnredeemableMethodology = null;
+
+                    // Save, otherwise values won't stick
+                    plugin.SavePluginSettings(savedSettings);
+                }
+                // End settings migration section
+
+
                 LoadValues(savedSettings);
             }
         }

@@ -1,7 +1,6 @@
 ﻿## What's Changed
 # 0.3.9
-* IMPORTANT: Platform field is no longer used by default to store the Redemption Store, but now Source is
-* IMPORTANT: Your settings for "Create Tags for Bundle Names" and "Unredeemable key handling" will be reset to defaults due to changes in the internal data format for these options
+* IMPORTANT: Platform field is no longer used by default to store the Redemption Store, but now Source is (helps some metadata plugins properly match games)
 * Added setting: Checkbox to add Key Redemption status Tag (default enabled)
 * Added setting: Checkbox to "Add Humble & Steam links" (default enabled)
 * Added setting: Checkbox to add "Nintendo Switch" to Platform for all Nintendo keys
