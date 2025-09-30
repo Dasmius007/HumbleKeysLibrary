@@ -7,7 +7,7 @@
   
   on:
     push:
-      branches: [ "releases/**" ]
+      branches: [ "releases/**", "beta/**" ]
       tags:
         - v[0-9]+.[0-9]+.[0-9]+*
   env:
