@@ -7,7 +7,7 @@
   
   on:
     push:
-      branches: [ "releases/**" ]
+      branches: [ "releases/**", "beta/**" ]
       tags:
         - v[0-9]+.[0-9]+.[0-9]+*
   env:
@@ -80,14 +80,14 @@
           run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
 
         - name: Split branch name
-          if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+          if: ${{ (github.ref_type == 'branch') && (startsWith(github.ref_name,'releases/v') || startsWith(github.ref_name,'beta/v'))}}
           env:
             BRANCH: ${{ github.ref_name }}
           id: version_branch
-          run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
+          run: echo "branch_version=${BRANCH##*/}" >> $GITHUB_OUTPUT
 
         - name: Generate version from branch
-          if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+          if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && (startsWith(github.ref_name,'releases/v') || startsWith(github.ref_name,'beta/v')) }}
           id: version_branch_generate
           uses: HardNorth/github-version-generate@v1.4.0
           with:
@@ -137,8 +137,8 @@
     
     build:
       #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
-      # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
-      runs-on: windows-2019
+      # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md
+      runs-on: windows-2025
       needs: [versioning]
       env:
         artifact-version: ${{ needs.versioning.outputs.artifact-version }}

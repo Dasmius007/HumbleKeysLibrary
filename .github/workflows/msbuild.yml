@@ -33,8 +33,8 @@ permissions:
 jobs:
   build:
     #Project uses .NET Framework 4.6.2 which is not in later Github hosted runners
-    # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
-    runs-on: windows-2019
+    # See: https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md
+    runs-on: windows-2025
 
     steps:
       - uses: actions/checkout@v4
