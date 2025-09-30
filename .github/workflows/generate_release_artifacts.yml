@@ -80,14 +80,14 @@
           run: echo "version=${{ steps.version_tag.outputs.full }}" >> $GITHUB_OUTPUT
 
         - name: Split branch name
-          if: ${{ (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+          if: ${{ (github.ref_type == 'branch') && (startsWith(github.ref_name,'releases/v') || startsWith(github.ref_name,'beta/v'))}}
           env:
             BRANCH: ${{ github.ref_name }}
           id: version_branch
           run: echo "branch_version=${BRANCH:10}" >> $GITHUB_OUTPUT
 
         - name: Generate version from branch
-          if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && startsWith(github.ref_name,'releases/v') }}
+          if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && (startsWith(github.ref_name,'releases/v') || startsWith(github.ref_name,'beta/v')) }}
           id: version_branch_generate
           uses: HardNorth/github-version-generate@v1.4.0
           with:
