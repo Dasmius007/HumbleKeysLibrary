@@ -84,7 +84,7 @@
           env:
             BRANCH: ${{ github.ref_name }}
           id: version_branch
-          run: echo "branch_version=${BRANCH##*/}" >> $GITHUB_OUTPUT
+          run: echo "branch_version=${BRANCH##*/v}" >> $GITHUB_OUTPUT
 
         - name: Generate version from branch
           if: ${{ steps.version_branch.outputs.branch_version && (github.ref_type == 'branch') && (startsWith(github.ref_name,'releases/v') || startsWith(github.ref_name,'beta/v')) }}
