@@ -27,7 +27,7 @@
     <StackPanel Margin="20">
 		<CheckBox x:Name="CheckHumbleConnectAccount"
 				  IsChecked="{Binding ConnectAccount}"
-			  Content="{DynamicResource LOCHumbleSettingsConnectAccount}"/>
+			  Content="{DynamicResource LOCHumbleKeysSettingsConnectAccount}"/>
 
         <StackPanel DockPanel.Dock="Top" Margin="40,5,5,0"
 					IsEnabled="{Binding IsChecked, ElementName=CheckHumbleConnectAccount}">
@@ -44,10 +44,10 @@
                 <TextBlock
 					Name="RedemptionStoreLabel" VerticalAlignment="Center"
                     Text="Add Redemption Store to field:"
-					ToolTip="{DynamicResource LOCHumbleRedemptionStoreTip}"
+					ToolTip="{DynamicResource LOCHumbleKeysRedemptionStoreTip}"
 					Grid.Column="0"/>
                 <ComboBox Margin="10 0 0 0" Name="RedemptionStoreValues" SelectedValuePath="Tag" SelectedValue="{Binding RedemptionStore, Mode=TwoWay}"
-                          Grid.Column="1" ToolTip="{DynamicResource LOCHumbleRedemptionStoreTip}">
+                          Grid.Column="1" ToolTip="{DynamicResource LOCHumbleKeysRedemptionStoreTip}">
                     <ComboBoxItem Tag="0" ToolTip="Don't add to any field">None</ComboBoxItem>
                     <ComboBoxItem Tag="1" ToolTip="Recommended">Source</ComboBoxItem>
                     <ComboBoxItem Tag="2">Tag</ComboBoxItem>
@@ -55,7 +55,7 @@
                     <ComboBoxItem Tag="4" ToolTip="Not recommended (may not work properly with some metadata add-ons; for backward compatibility)">Platform</ComboBoxItem>
                 </ComboBox>
             </Grid>
-            <CheckBox Margin="0,10,0,0" x:Name="CheckAddLinks" IsChecked="{Binding AddLinks}" Content="{DynamicResource LOCHumbleAddLinks}"/>
+            <CheckBox Margin="0,10,0,0" x:Name="CheckAddLinks" IsChecked="{Binding AddLinks}" Content="{DynamicResource LOCHumbleKeysAddLinks}"/>
             <CheckBox Margin="0,10,0,0"
 						IsChecked="{Binding ImportChoiceKeys}"
 						Content="Import Choice Games"
@@ -69,10 +69,10 @@
 				<TextBlock
 						Name="TagWithBundleNameLabel" VerticalAlignment="Center"
 						Text="Create Tags for Bundle Names:"
-						ToolTip="{DynamicResource LOCHumbleTagWithBundleTip}"
+						ToolTip="{DynamicResource LOCHumbleKeysTagWithBundleTip}"
 						Grid.Column="0"/>
                 <ComboBox Margin="10 0 0 0" Name="TagMethodCombo" SelectedValuePath="Tag" SelectedValue="{Binding TagWithBundleName, Mode=TwoWay}"
-                          Grid.Column="1" ToolTip="{DynamicResource LOCHumbleTagWithBundleTip}">
+                          Grid.Column="1" ToolTip="{DynamicResource LOCHumbleKeysTagWithBundleTip}">
                     <ComboBoxItem Tag="0" ToolTip="Do not create Tags based on Bundle Name">None</ComboBoxItem>
                     <ComboBoxItem Tag="1" ToolTip="Create only Tags for Humble Choice Monthly bundles" IsEnabled="{Binding IsChecked,ElementName=ImportChoiceKeys}">
                         <ComboBoxItem.Style>
@@ -95,10 +95,10 @@
 				<TextBlock
 					Name="UnredeemableKeyHandlingLabel" VerticalAlignment="Center"
                     Text="Unredeemable key handling:"
-					ToolTip="{DynamicResource LOCHumbleUnredeemableKeyHandlingTip}"
+					ToolTip="{DynamicResource LOCHumbleKeysUnredeemableKeyHandlingTip}"
 					Grid.Column="0"/>
                 <ComboBox Margin="10 0 0 0" Name="UnredeemableKeyValues" SelectedValuePath="Tag" SelectedValue="{Binding UnredeemableKeyHandling, Mode=TwoWay}"
-                          Grid.Column="1" ToolTip="{DynamicResource LOCHumbleUnredeemableKeyHandlingTip}">
+                          Grid.Column="1" ToolTip="{DynamicResource LOCHumbleKeysUnredeemableKeyHandlingTip}">
                     <ComboBoxItem Tag="0" ToolTip="Create only Tags for games that cannot be redeemed">Tag</ComboBoxItem>
                     <ComboBoxItem Tag="1" ToolTip="Delete games that cannot be redeemed">Delete</ComboBoxItem>
                 </ComboBox>
@@ -115,7 +115,7 @@
             <CheckBox Margin="0,10,0,0" x:Name="CheckPlatformWindows" IsChecked="{Binding AddPlatformWindows}" Content="Add PC (Windows) to all other keys (Recommended)"/>
 
             <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-				<Button Content="{DynamicResource LOCHumbleAuthenticateLabel}" HorizontalAlignment="Left"
+				<Button Content="{DynamicResource LOCHumbleKeysAuthenticateLabel}" HorizontalAlignment="Left"
 					Command="{Binding LoginCommand}" Margin="0,5,5,5"/>
 				<TextBlock VerticalAlignment="Center" Margin="10,5,5,5">
 					<TextBlock.Tag>
@@ -128,13 +128,13 @@
 						<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}">
 							<Style.Triggers>
 								<Trigger Property="Tag" Value="{StaticResource True}">
-									<Setter Property="Text" Value="{DynamicResource LOCHumbleLoggedIn}" />
+									<Setter Property="Text" Value="{DynamicResource LOCHumbleKeysLoggedIn}" />
 								</Trigger>
 								<Trigger Property="Tag" Value="{StaticResource False}">
-									<Setter Property="Text" Value="{DynamicResource LOCHumbleNotLoggedIn}" />
+									<Setter Property="Text" Value="{DynamicResource LOCHumbleKeysNotLoggedIn}" />
 								</Trigger>
 								<Trigger Property="Tag" Value="{x:Null}">
-									<Setter Property="Text" Value="{DynamicResource LOCHumbleLoginChecking}" />
+									<Setter Property="Text" Value="{DynamicResource LOCHumbleKeysLoginChecking}" />
 								</Trigger>
 							</Style.Triggers>
 						</Style>

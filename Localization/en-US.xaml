@@ -1,12 +1,12 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-  <sys:String x:Key="LOCHumbleSettingsConnectAccount">Connect account</sys:String>
-  <sys:String x:Key="LOCHumbleLoginChecking">Checking authentication status…</sys:String>
-  <sys:String x:Key="LOCHumbleLoggedIn">User is authenticated</sys:String>
-  <sys:String x:Key="LOCHumbleNotLoggedIn">Requires authentication</sys:String>
-  <sys:String x:Key="LOCHumbleNotLoggedInError">Failed to authenticate user.</sys:String>
-  <sys:String x:Key="LOCHumbleAuthenticateLabel">Authenticate</sys:String>
-  <sys:String x:Key="LOCHumbleAddLinks">Add Humble &amp; Steam links</sys:String>
-  <sys:String x:Key="LOCHumbleRedemptionStoreTip">Add the store the key is for (e.g. Steam) to this field</sys:String>
-  <sys:String x:Key="LOCHumbleTagWithBundleTip">When None is not selected, Humble Keys Library will add a new Tag per Bundle Name</sys:String>
-  <sys:String x:Key="LOCHumbleUnredeemableKeyHandlingTip">If Tag is selected a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeemable', if Delete is selected the game will be deleted from the library if it cannot be redeemed</sys:String>
+  <sys:String x:Key="LOCHumbleKeysSettingsConnectAccount">Connect account</sys:String>
+  <sys:String x:Key="LOCHumbleKeysLoginChecking">Checking authentication status…</sys:String>
+  <sys:String x:Key="LOCHumbleKeysLoggedIn">User is authenticated</sys:String>
+  <sys:String x:Key="LOCHumbleKeysNotLoggedIn">Requires authentication</sys:String>
+  <sys:String x:Key="LOCHumbleKeysNotLoggedInError">Failed to authenticate user.</sys:String>
+  <sys:String x:Key="LOCHumbleKeysAuthenticateLabel">Authenticate</sys:String>
+  <sys:String x:Key="LOCHumbleKeysAddLinks">Add Humble &amp; Steam links</sys:String>
+  <sys:String x:Key="LOCHumbleKeysRedemptionStoreTip">Add the store the key is for (e.g. Steam) to this field</sys:String>
+  <sys:String x:Key="LOCHumbleKeysTagWithBundleTip">When None is not selected, Humble Keys Library will add a new Tag per Bundle Name</sys:String>
+  <sys:String x:Key="LOCHumbleKeysUnredeemableKeyHandlingTip">If Tag is selected a new tag will replace the existing 'Key: Unredeemed' tag with 'Key: Unredeemable', if Delete is selected the game will be deleted from the library if it cannot be redeemed</sys:String>
 </ResourceDictionary>
