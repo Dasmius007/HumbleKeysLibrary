@@ -40,6 +40,7 @@ namespace HumbleKeys.Services
                         Directory.CreateDirectory($"{localCachePath}\\{cachePath}");
                     }
                 }
+                logger.Info("Cache directories prepared");
             }
             else
             {
@@ -97,20 +98,20 @@ namespace HumbleKeys.Services
                 }
             }
 
+            logger.Trace("Fetching library keys from Humble Bundle");
             webView.NavigateAndWait(libraryUrl);
-                var libSource = webView.GetPageSource();
-                var match = Regex.Match(libSource, @"""gamekeys"":\s*(\[.+\])");
-                if (!match.Success) throw new Exception("User is not authenticated.");
+            var libSource = webView.GetPageSource();
+            var match = Regex.Match(libSource, @"""gamekeys"":\s*(\[.+\])");
+            if (!match.Success) throw new Exception("User is not authenticated.");
                 
-                var strKeys = match.Groups[1].Value;
-                logger.Trace(
-                    $"Request:{libraryUrl} Content:{Serialization.ToJson(Serialization.FromJson<List<string>>(strKeys), true)}");
-                if (preferCache)
-                {
-                    CreateCacheContent(keysCacheFilename,strKeys);
-                }
-                return Serialization.FromJson<List<string>>(strKeys);
-
+            var strKeys = match.Groups[1].Value;
+            logger.Trace(
+                $"Request:{libraryUrl} Content:{Serialization.ToJson(Serialization.FromJson<List<string>>(strKeys), true)}");
+            if (preferCache)
+            {
+                CreateCacheContent(keysCacheFilename,strKeys);
+            }
+            return Serialization.FromJson<List<string>>(strKeys);
         }
 
         string GetCacheContent(string keysCacheFilename)
@@ -121,6 +122,7 @@ namespace HumbleKeys.Services
             streamReader.Close();
             return cacheContent;
         }
+
         T GetCacheContent<T>(string keysCacheFilename) where T : class
         {
             var cacheContent = GetCacheContent(keysCacheFilename);
@@ -137,6 +139,8 @@ namespace HumbleKeys.Services
         internal Dictionary<string, Order> GetOrders(List<string> gameKeys, bool includeChoiceMonths = false)
         {
             var orders = new Dictionary<string, Order>();
+            logger.Trace($"GetOrders: Processing {gameKeys.Count} game keys");
+
             foreach (var key in gameKeys)
             {
                 var orderUri = string.Format(orderUrlMask, key);
@@ -150,6 +154,7 @@ namespace HumbleKeys.Services
 
                 if (order == null) {
                     cacheHit = false;
+                    logger.Trace($"Fetching order details");
                     webView.NavigateAndWait(orderUri);
                     var strContent = webView.GetPageText();
                     if (preferCache)
@@ -169,8 +174,10 @@ namespace HumbleKeys.Services
                     AddChoiceMonthlyGames(order);
                 }
                 orders.Add(order.gamekey, order);
+                logger.Trace($"GetOrders: Added order {order.gamekey} with {order.tpkd_dict.all_tpks.Count} total tpks");
             }
 
+            logger.Trace($"GetOrders: Completed processing {orders.Count} orders");
             return orders;
         }
 

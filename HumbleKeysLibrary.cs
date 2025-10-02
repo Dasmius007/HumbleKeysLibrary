@@ -74,6 +74,7 @@ namespace HumbleKeys
             {
                 var orders = ScrapeOrders();
                 var selectedTpkds = SelectTpkds(orders);
+                logger.Trace("ImportGames: Selected Tpkds Count = " + selectedTpkds.Count());
                 ProcessOrders(orders, selectedTpkds, ref importedGames, ref removedGames);
             }
             catch (Exception e)
@@ -97,6 +98,7 @@ namespace HumbleKeys
                 PlayniteApi.Notifications.Remove(dbImportMessageId);
             }
 
+            logger.Trace($"ImportGames: Imported {importedGames.Count} games, Removed {removedGames.Count} games");
             return importedGames;
         }
 
@@ -113,7 +115,9 @@ namespace HumbleKeys
                         CachePath = $"{PlayniteApi.Paths.ExtensionsDataPath}\\{Id}"
                     });
                 var keys = api.GetLibraryKeys();
+                logger.Trace("ScrapeOrders: Keys Count = " + keys.Count);
                 orders = api.GetOrders(keys, Settings.ImportChoiceKeys);
+                logger.Trace("ScrapeOrders: Orders Count = " + orders.Count);
             }
 
             return orders;
@@ -149,6 +153,7 @@ namespace HumbleKeys
             if (winPlatform == null) winPlatform = PlayniteApi.Database.Platforms.FirstOrDefault(platform => platform.SpecificationId == PC_WINDOWS);
             if (switchPlatform == null) switchPlatform = PlayniteApi.Database.Platforms.FirstOrDefault(platform => platform.SpecificationId == NINTENDO_SWITCH);
 
+            logger.Trace("ProcessOrders: DB begin update");
             PlayniteApi.Database.BeginBufferUpdate();
             try
             {
@@ -251,7 +256,11 @@ namespace HumbleKeys
                                     if (UpdateStoreLinks(alreadyImported.Links, tpkd, true)) otherUpdated = true;
                                 }
 
-                                if (!tagsUpdated && !otherUpdated) continue;
+                                if (!tagsUpdated && !otherUpdated)
+                                {
+                                    logger.Trace($"ProcessOrders: No update needed for '{alreadyImported.Name}' with GameId = {alreadyImported.GameId}");
+                                    continue;
+                                }
 
                                 if (alreadyImported.TagIds != null && alreadyImported.TagIds.Contains(unredeemableTag.Id))
                                 {
@@ -285,6 +294,7 @@ namespace HumbleKeys
                                 else
                                 {
                                     PlayniteApi.Database.Games.Update(alreadyImported);
+                                    logger.Trace($"ProcessOrders: Updated '{alreadyImported.Name}' with GameId = {alreadyImported.GameId}");
                                     if (tagsUpdated)
                                     {
                                         PlayniteApi.Notifications.Add(
@@ -304,7 +314,7 @@ namespace HumbleKeys
                                 // Remove Existing Game?
                                 PlayniteApi.Database.Games.Remove(alreadyImported);
                                 logger.Trace(
-                                    $"Removing game {alreadyImported.Name} since Settings.IgnoreRedeemedKeys is: [{Settings.IgnoreRedeemedKeys}] and IsKeyPresent() is [{IsKeyPresent(tpkd)}]");
+                                    $"Removing game '{alreadyImported.Name}' with GameId = {alreadyImported.GameId} since Settings.IgnoreRedeemedKeys is: [{Settings.IgnoreRedeemedKeys}] and IsKeyPresent() is [{IsKeyPresent(tpkd)}]");
                             }
                         }
                     }
@@ -313,6 +323,7 @@ namespace HumbleKeys
             finally
             {
                 PlayniteApi.Database.EndBufferUpdate();
+                logger.Trace("ProcessOrders: DB update complete");
             }
         }
 
@@ -449,6 +460,7 @@ namespace HumbleKeys
                 PlayniteApi.Database.Games.Update(game);
             }
 
+            logger.Trace($"ImportNewGame: Added '{game.Name}' with GameId = {game.GameId}");
             return game;
         }
 

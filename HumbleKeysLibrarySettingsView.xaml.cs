@@ -62,7 +62,7 @@ namespace HumbleKeys
                 */
 
                 // Log the error
-                logger.Info($"Failed to load resources for culture '{cultureName}': {ex.Message}");
+                logger.Warn($"Failed to load resources for culture '{cultureName}': {ex.Message}");
             }
         }
 
