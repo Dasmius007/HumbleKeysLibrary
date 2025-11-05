@@ -1,5 +1,19 @@
 AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
+  - Version: 0.3.9
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2025-11-05
+    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.3.9/HumbleKeysLibrary_0.3.9.pext
+    Changelog:
+      - IMPORTANT - Platform field is no longer used by default for the Redemption Store (i.e. Steam, GOG, etc.), but now Source is (helps some metadata plugins properly match games)
+      - Added dropdown setting to add Redemption Store (e.g. Steam) to either Source (now default), Tag, Category, or Platform (no longer default) field, or None (disabled)
+      - Added checkbox setting to add Key Redemption status Tag (default enabled)
+      - Added checkbox setting to "Add Humble & Steam links" (default enabled)
+      - Added checkbox setting to add "Nintendo Switch" to Platform for all Nintendo keys
+      - Added checkbox setting to add default of "PC (Windows)" to Platform for all other keys
+      - Updated settings UI to be more compact and add the above features
+      - Fixed a couple misc. bugs related to key redemption tags and tag methodology
+      - Added more logging to help debug excessive library update time reported by some users
   - Version: 0.3.8
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2025-05-07
