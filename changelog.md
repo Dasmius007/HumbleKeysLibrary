@@ -1,13 +1,14 @@
 ﻿## What's Changed
 # 0.3.9
-* IMPORTANT: Platform field is no longer used by default to store the Redemption Store, but now Source is (helps some metadata plugins properly match games)
+* IMPORTANT: Platform field is no longer used by default for the Redemption Store (i.e. Steam, GOG, etc.), but now Source is (helps some metadata plugins properly match games)
+* Added setting: Dropdown to add Redemption Store (e.g. "Humble Key: Steam") to choice of field: Source (now default), Tag, Category, Platform (no longer default), or None (disabled)
 * Added setting: Checkbox to add Key Redemption status Tag (default enabled)
 * Added setting: Checkbox to "Add Humble & Steam links" (default enabled)
 * Added setting: Checkbox to add "Nintendo Switch" to Platform for all Nintendo keys
 * Added setting: Checkbox to add default of "PC (Windows)" to Platform for all other keys
-* Added setting: Dropdown to add Redemption Store (e.g. "Humble Key: Steam") to choice of field: Source (now default), Tag, Category, Platform (no longer default), or None (disabled)
 * Updated settings UI to be more compact and add the above features
 * Fixed a couple misc. bugs related to key redemption tags and tag methodology
+* Added more logging to help debug excessive library update time reported by some users
 
 # 0.3.8
 * Restored plugin name

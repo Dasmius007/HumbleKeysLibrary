@@ -18,6 +18,10 @@
             <sys:Boolean x:Key="True">True</sys:Boolean>
             <sys:Boolean x:Key="False">False</sys:Boolean>
 
+            <ControlTemplate x:Key="InfoTag">
+                <Path Width="12" Height="12" Data="F1 M 9.995117 7.802734 C 10.665689 7.802734 11.311849 7.890625 11.933594 8.066406 C 12.555338 8.242188 13.136393 8.487956 13.676758 8.803711 C 14.217121 9.119467 14.710285 9.500326 15.15625 9.946289 C 15.602213 10.392253 15.983072 10.888672 16.298828 11.435547 C 16.614582 11.982422 16.858723 12.565104 17.03125 13.183594 C 17.203775 13.802084 17.290039 14.44987 17.290039 15.126953 C 17.290039 15.797526 17.203775 16.442059 17.03125 17.060547 C 16.858723 17.679037 16.614582 18.260092 16.298828 18.803711 C 15.983072 19.34733 15.602213 19.840494 15.15625 20.283203 C 14.710285 20.725912 14.217121 21.106771 13.676758 21.425781 C 13.136393 21.744791 12.555338 21.990561 11.933594 22.163086 C 11.311849 22.335611 10.665689 22.421875 9.995117 22.421875 C 9.324544 22.421875 8.678385 22.335611 8.056641 22.163086 C 7.434896 21.990561 6.853841 21.744791 6.313477 21.425781 C 5.773112 21.106771 5.279948 20.725912 4.833984 20.283203 C 4.388021 19.840494 4.007161 19.34733 3.691406 18.803711 C 3.375651 18.260092 3.129883 17.679037 2.954102 17.060547 C 2.77832 16.442059 2.69043 15.797526 2.69043 15.126953 C 2.69043 14.44987 2.77832 13.802084 2.954102 13.183594 C 3.129883 12.565104 3.375651 11.982422 3.691406 11.435547 C 4.007161 10.888672 4.388021 10.392253 4.833984 9.946289 C 5.279948 9.500326 5.773112 9.119467 6.313477 8.803711 C 6.853841 8.487956 7.434896 8.242188 8.056641 8.066406 C 8.678385 7.890625 9.324544 7.802734 9.995117 7.802734 Z M 11.000977 19.091797 L 11.000977 13.105469 L 9.194336 13.105469 L 9.194336 19.091797 Z M 10.112305 12.246094 C 10.444336 12.246094 10.711263 12.145183 10.913086 11.943359 C 11.114908 11.741537 11.21582 11.48112 11.21582 11.162109 C 11.21582 10.8431 11.114908 10.587565 10.913086 10.395508 C 10.711263 10.203451 10.444336 10.107422 10.112305 10.107422 C 9.786783 10.107422 9.521484 10.203451 9.316406 10.395508 C 9.111328 10.587565 9.008789 10.8431 9.008789 11.162109 C 9.008789 11.31185 9.036458 11.451823 9.091797 11.582031 C 9.147135 11.71224 9.223633 11.8278 9.321289 11.928711 C 9.418945 12.029623 9.534505 12.107748 9.667969 12.163086 C 9.801432 12.218425 9.949544 12.246094 10.112305 12.246094 Z"  Stretch="Uniform" Fill="{DynamicResource TextBrush}" RenderTransformOrigin="0.5,0.5" />
+            </ControlTemplate>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/HumbleKeysLibrary;component/Localization/en-US.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -40,6 +44,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock
 					Name="RedemptionStoreLabel" VerticalAlignment="Center"
@@ -54,6 +59,16 @@
                     <ComboBoxItem Tag="3">Category</ComboBoxItem>
                     <ComboBoxItem Tag="4" ToolTip="Not recommended (may not work properly with some metadata add-ons; for backward compatibility)">Platform</ComboBoxItem>
                 </ComboBox>
+				<TextBlock Margin="10,6,0,0" Grid.Column="2">
+                    <TextBlock.ToolTip>
+                        <TextBlock>
+                            <Bold>NOTICE:</Bold> Platform field is no longer used by default, but now
+                            <LineBreak />
+                            Source is to help some metadata plugins properly match games.
+                        </TextBlock>
+                    </TextBlock.ToolTip>
+					<ContentControl Template="{StaticResource InfoTag}" />
+				</TextBlock>
             </Grid>
             <CheckBox Margin="0,10,0,0" x:Name="CheckAddLinks" IsChecked="{Binding AddLinks}" Content="{DynamicResource LOCHumbleKeysAddLinks}"/>
             <CheckBox Margin="0,10,0,0"
