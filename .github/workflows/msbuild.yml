@@ -39,17 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Update extension.yaml
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: 'extension.yaml'
-          changes: |
-            {
-            "Links.Url": "${{github.server_url}}/${{github.repository}}",
-            "Author": "${{github.repository_owner}}"
-            }
-          commitChange: true
-
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
