@@ -6,11 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Playnite.SDK.Data;
 
 namespace HumbleKeys.Services
 {
-    public class HumbleKeysAccountClient
+    public class HumbleKeysAccountClient: IDisposable
     {
         private static readonly ILogger logger = LogManager.GetLogger();
         private readonly IWebView webView;
@@ -136,13 +137,15 @@ namespace HumbleKeys.Services
             streamWriter.Close();
         }
         
-        internal Dictionary<string, Order> GetOrders(List<string> gameKeys, bool includeChoiceMonths = false)
+        internal IEnumerable<Order> GetOrders(List<string> gameKeys, bool includeChoiceMonths = false, CancellationToken cancellationToken = default)
         {
-            var orders = new Dictionary<string, Order>();
             logger.Trace($"GetOrders: Processing {gameKeys.Count} game keys");
 
+            var processedOrderCount = gameKeys.Count;
             foreach (var key in gameKeys)
             {
+                if (cancellationToken.IsCancellationRequested) break;
+                
                 var orderUri = string.Format(orderUrlMask, key);
                 var cacheFileName = $"{localCachePath}/order/{key}.json";
                 Order order = null;
@@ -173,12 +176,11 @@ namespace HumbleKeys.Services
                 {
                     AddChoiceMonthlyGames(order);
                 }
-                orders.Add(order.gamekey, order);
                 logger.Trace($"GetOrders: Added order {order.gamekey} with {order.tpkd_dict.all_tpks.Count} total tpks");
+                yield return order;
             }
 
-            logger.Trace($"GetOrders: Completed processing {orders.Count} orders");
-            return orders;
+            logger.Trace($"GetOrders: Completed processing {processedOrderCount} orders");
         }
 
         void AddChoiceMonthlyGames(Order order)
@@ -302,6 +304,11 @@ namespace HumbleKeys.Services
             }
 
             return orders;
+        }
+
+        public void Dispose()
+        {
+            webView?.Dispose();
         }
     }
 }
