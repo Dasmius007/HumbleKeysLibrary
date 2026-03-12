@@ -5,7 +5,7 @@ Packages:
     ReleaseDate: 2026-03-12
     PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.4.0/HumbleKeysLibrary_0.4.0.pext
     Changelog:
-      - '* Fixed issue where games in the Exclusion List were being re-imported'
+      - Fixed issue where games in the Exclusion List were being re-imported
   - Version: 0.3.9
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2025-11-05
