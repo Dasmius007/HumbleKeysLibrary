@@ -1,4 +1,7 @@
 ﻿## What's Changed
+# 0.4.0
+* Fixed issue where games in the Exclusion List were being re-imported
+
 # 0.3.9
 * IMPORTANT - Platform field is no longer used by default for the Redemption Store (i.e. Steam, GOG, etc.), but now Source is (helps some metadata plugins properly match games)
 * Added dropdown setting to add Redemption Store (e.g. Steam) to either Source (now default), Tag, Category, or Platform (no longer default) field, or None (disabled)
