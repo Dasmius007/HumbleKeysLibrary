@@ -158,6 +158,7 @@ namespace HumbleKeys
             PlayniteApi.Database.BeginBufferUpdate();
             try
             {
+                string[] validMonthlyNames = { "Humble Monthly", "Humble Choice" };
                 foreach (var tpkdGroup in tpkds)
                 {
                     var tpkdGroupEntries = tpkdGroup.AsEnumerable();
@@ -165,7 +166,7 @@ namespace HumbleKeys
                     var groupEntries = tpkdGroupEntries.ToList();
                     if (Settings.ImportChoiceKeys && tagMethod != TagMethodology.None && groupEntries.Count() > 1)
                     {
-                        var isHumbleMonthly = orders[tpkdGroup.Key].product.human_name.Contains("Humble Monthly");
+                        var isHumbleMonthly = validMonthlyNames.Any(name => orders[tpkdGroup.Key].product.human_name.Contains(name));
                         if (tagMethod == TagMethodology.All || tagMethod == TagMethodology.Monthly && isHumbleMonthly)
                         {
                             humbleChoiceTag = PlayniteApi.Database.Tags.Add($"Bundle: {orders[tpkdGroup.Key].product.human_name}");
