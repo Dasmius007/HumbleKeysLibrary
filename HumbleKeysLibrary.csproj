@@ -89,7 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="PlayniteSDK" Version="6.9.0" />
+    <PackageReference Include="PlayniteSDK" Version="6.14.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".github\workflows\generate_release_artifacts.yml" />

@@ -1,4 +1,8 @@
 ﻿## What's Changed
+# 0.4.1
+* Display a progress bar in the sidebar to convey the status of scraping orders from Humble API
+* Cancelling during scraping is now possible
+
 # 0.4.0
 * Fixed issue where games in the Exclusion List were being re-imported
 
