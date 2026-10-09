@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Controls;
+using HumbleKeys.Extensions;
 using HumbleKeys.Models;
 using HumbleKeys.Services;
 
@@ -23,8 +24,6 @@ namespace HumbleKeys
         private static readonly ILogger logger = LogManager.GetLogger();
         private const string dbImportMessageId = "humblekeyslibImportError";
         private const string humblePurchaseUrlMask = @"https://www.humblebundle.com/downloads?key={0}";
-        private const string steamGameUrlMask = @"https://store.steampowered.com/app/{0}";
-        private const string steamSearchUrlMask = @"https://store.steampowered.com/search/?term={0}";
         private const string REDEEMED_STR = "Key: Redeemed";
         private const string UNREDEEMED_STR = "Key: Unredeemed";
         private const string UNREDEEMABLE_STR = "Key: Unredeemable";
@@ -385,7 +384,7 @@ namespace HumbleKeys
             }
         }
 
-        bool UpdateStoreLinks(ObservableCollection<Link> links, Order.TpkdDict.Tpk tpkd, bool useDispatcher)
+        public bool UpdateStoreLinks(ObservableCollection<Link> links, Order.TpkdDict.Tpk tpkd, bool useDispatcher)
         {
             var recordChanged = false;
 
@@ -412,29 +411,11 @@ namespace HumbleKeys
                 }
             }
 
-            if (tpkd.key_type != "steam") return recordChanged;
+            if (tpkd?.key_type != "steam") return recordChanged;
 
-            Link steamGameLink;
-            string humanName = string.Empty;
-            if (!string.IsNullOrEmpty(tpkd.steam_app_id))
-            {
-                steamGameLink = MakeSteamLink(tpkd.steam_app_id);
-            }
-            else
-            {
-                humanName = tpkd.human_name;
-                steamGameLink = new Link("Steam", string.Format(steamSearchUrlMask, humanName.Replace(" ", "%2B")));
-            }
-
-            if (humanName.EndsWith(" Steam"))
-            {
-                humanName = humanName.Remove(humanName.LastIndexOf(" Steam", StringComparison.Ordinal));
-            }
-            if (humanName.EndsWith(" DLC"))
-            {
-                humanName = humanName.Remove(humanName.LastIndexOf(" DLC", StringComparison.Ordinal));
-            }
-
+            var steamGameLink = tpkd.MakeSteamLink();
+            if (steamGameLink == null) return false;
+            
             var steamLinks = links.Where((link1, i) => link1.Name == "Steam");
             var steamLinksList = steamLinks.ToList();
             var existingSteamLink = steamLinksList.FirstOrDefault();
@@ -468,6 +449,7 @@ namespace HumbleKeys
             }
 
             return true;
+
         }
 
         Game ImportNewGame(Order.TpkdDict.Tpk tpkd, Tag groupTag = null)
@@ -689,7 +671,6 @@ namespace HumbleKeys
         #region === Helper Methods ============
         private static string GetGameId(Order.TpkdDict.Tpk tpk) => $"{tpk.machine_name}_{tpk.gamekey}";
         private static Link MakeLink(string gameKey) => new Link("Humble Purchase URL", string.Format(humblePurchaseUrlMask, gameKey) );
-        private static Link MakeSteamLink(string gameKey) => new Link("Steam", string.Format(steamGameUrlMask, gameKey));
         private static bool IsKeyNull(Order.TpkdDict.Tpk t) => t?.redeemed_key_val == null;
         private static bool IsKeyPresent(Order.TpkdDict.Tpk t) => !IsKeyNull(t);
         private static string GetOrderRedemptionTagState(Order.TpkdDict.Tpk t)
