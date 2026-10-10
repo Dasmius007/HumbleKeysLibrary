@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\CloneObject.cs" />
+    <Compile Include="Extensions\TpkExtensions.cs" />
     <Compile Include="HumbleKeysLibraryClient.cs" />
     <Compile Include="HumbleKeysLibrary.cs" />
     <Compile Include="HumbleKeysLibrarySettings.cs" />
@@ -89,7 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="PlayniteSDK" Version="6.9.0" />
+    <PackageReference Include="PlayniteSDK" Version="6.16.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".github\workflows\generate_release_artifacts.yml" />

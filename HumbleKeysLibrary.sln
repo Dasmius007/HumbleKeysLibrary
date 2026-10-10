@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HumbleKeysLibrary", "HumbleKeysLibrary.csproj", "{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HumbleKeysLibraryTest", "HumbleKeysLibraryTest\HumbleKeysLibraryTest.csproj", "{487D0989-E9EF-4852-A4C2-FB40E1E2ABA9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417} = {2351B5C1-6E28-4B79-A1D9-90FDA53B5417}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.Release|Any CPU.Build.0 = Release|Any CPU
+		{487D0989-E9EF-4852-A4C2-FB40E1E2ABA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{487D0989-E9EF-4852-A4C2-FB40E1E2ABA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{487D0989-E9EF-4852-A4C2-FB40E1E2ABA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{487D0989-E9EF-4852-A4C2-FB40E1E2ABA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
