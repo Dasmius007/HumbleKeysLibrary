@@ -1,4 +1,4 @@
-﻿using Playnite;
+using Playnite;
 using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
@@ -178,6 +178,8 @@ namespace HumbleKeys
             if (switchPlatform == null) switchPlatform = PlayniteApi.Database.Platforms.FirstOrDefault(platform => platform.SpecificationId == NINTENDO_SWITCH);
 
             logger.Trace("ProcessOrders: DB begin update");
+            string[] validMonthlyNames = { "Humble Monthly", "Humble Choice" };
+            
             PlayniteApi.Database.BeginBufferUpdate();
             try
             {
@@ -201,7 +203,7 @@ namespace HumbleKeys
                         var groupEntries = tpkdGroupEntries.ToList();
                         if (Settings.ImportChoiceKeys && tagMethod != TagMethodology.None && groupEntries.Count() > 1)
                         {
-                            var isHumbleMonthly = order.product.human_name.Contains("Humble Monthly");
+                            bool isHumbleMonthly = validMonthlyNames.Any(name => order.product.human_name.Contains(name));
                             if (tagMethod == TagMethodology.All || tagMethod == TagMethodology.Monthly && isHumbleMonthly)
                             {
                                 humbleChoiceTag = PlayniteApi.Database.Tags.Add($"Bundle: {order.product.human_name}");
