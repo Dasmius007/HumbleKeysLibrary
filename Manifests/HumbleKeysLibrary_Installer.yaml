@@ -1,9 +1,9 @@
 AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
-  - Version: 0.4.1
+  - Version: 0.4.2
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-10-11
-    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.4.1/HumbleKeysLibrary_0.4.1.pext
+    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.4.2/HumbleKeysLibrary_0.4.2.pext
     Changelog:
       - '* Display a progress bar in the sidebar to convey the status of scraping orders from Humble API (Issue #39)'
       - '* Cancelling during scraping is now possible (Issue #39)'
