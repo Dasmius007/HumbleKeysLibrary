@@ -15,7 +15,7 @@ on:
     branches: [ "master" ]
     # build handled by release packaging workflow
     tags-ignore:
-      - [0-9]+.[0-9]+.[0-9]+*
+      - '[0-9]+.[0-9]+.[0-9]+*'
 
 
 env:
