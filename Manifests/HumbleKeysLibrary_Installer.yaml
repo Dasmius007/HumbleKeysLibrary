@@ -1,5 +1,14 @@
 AddonId: 62ac4052-e08a-4a1a-b70a-c2c0c3673bb9
 Packages:
+  - Version: 0.4.1
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-10-11
+    PackageUrl: https://github.com/Dasmius007/HumbleKeysLibrary/releases/download/0.4.1/HumbleKeysLibrary_0.4.1.pext
+    Changelog:
+      - '* Display a progress bar in the sidebar to convey the status of scraping orders from Humble API (Issue #39)'
+      - '* Cancelling during scraping is now possible (Issue #39)'
+      - '* SteamLink creation hardening (Issue #7)'
+      - '* Humble Monthly matches both old and new naming convention (PR #54)'
   - Version: 0.4.0
     RequiredApiVersion: 6.9.0
     ReleaseDate: 2026-03-12
