@@ -1,7 +1,9 @@
 ﻿## What's Changed
 # 0.4.1
-* Display a progress bar in the sidebar to convey the status of scraping orders from Humble API
-* Cancelling during scraping is now possible
+* Display a progress bar in the sidebar to convey the status of scraping orders from Humble API (Issue #39)
+* Cancelling during scraping is now possible (Issue #39)
+* SteamLink creation hardening (Issue #7)
+* Humble Monthly matches both old and new naming convention (PR #54)
 
 # 0.4.0
 * Fixed issue where games in the Exclusion List were being re-imported
