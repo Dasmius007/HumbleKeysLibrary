@@ -1,5 +1,5 @@
 ﻿## What's Changed
-# 0.4.1
+# 0.4.2
 * Display a progress bar in the sidebar to convey the status of scraping orders from Humble API (Issue #39)
 * Cancelling during scraping is now possible (Issue #39)
 * SteamLink creation hardening (Issue #7)
