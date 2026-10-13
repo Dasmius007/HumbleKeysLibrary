@@ -168,6 +168,15 @@
             filename: 'AssemblyInfo.cs'
             recursive: false
 
+        - name: Update extension.yaml
+          uses: fjogeleit/yaml-update-action@main
+          with:
+            valueFile: 'extension.yaml'
+            changes: |
+              {
+              "Version": "${{env.version}}"
+              }
+            
         - name: Display the version used
           run: echo "${{steps.set-assembly-version.outputs.version}}"
 
