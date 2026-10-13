@@ -1,4 +1,7 @@
 ﻿## What's Changed
+# 0.4.3
+* Workflow fix to remove endless update loop (Issue #61)
+
 # 0.4.2
 * Display a progress bar in the sidebar to convey the status of scraping orders from Humble API (Issue #39)
 * Cancelling during scraping is now possible (Issue #39)
